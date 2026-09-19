@@ -207,9 +207,6 @@ class ChatComponent {
             const d = await r.json();
             if (d.messages) {
                 this.clear();
-                if (typeof window.setGreetingRendered === 'function') {
-                    window.setGreetingRendered(d.messages.length > 0);
-                }
                 for (const m of d.messages) {
                     this.appendMessage(m.content, m.role === 'user' ? 'user' : 'bosse');
                 }

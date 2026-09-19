@@ -2,7 +2,6 @@ let avatar, chat, input;
 let mediaRecorder, audioChunks = [];
 let appConfig = {};
 let initialGreeting = '';
-let greetingRendered = false;
 const AIBI_NIVA = window.AIBI_NIVA || new URLSearchParams(location.search).get('niva') || undefined;
 const IS_STAFF = ['personal', 'intern', 'staff'].includes((window.AIBI_NIVA || '').toLowerCase());
 
@@ -14,15 +13,10 @@ function enterConversationMode() {
     const wrapper = document.querySelector('.chat-wrapper');
     if (!wrapper || wrapper.classList.contains('chat-started')) return;
     wrapper.classList.add('chat-started');
-    if (!greetingRendered && chat && initialGreeting) {
-        chat.appendMessage(initialGreeting, 'bosse');
-        greetingRendered = true;
-    }
     requestAnimationFrame(() => chat && chat.scrollToBottom());
 }
 
 window.enterConversationMode = enterConversationMode;
-window.setGreetingRendered = (rendered) => { greetingRendered = Boolean(rendered); };
 
 async function init() {
     try { const r = await fetch('/api/config'); appConfig = await r.json(); }
@@ -37,7 +31,6 @@ async function init() {
     chat.clear();
     localStorage.removeItem('bosse_session_id');
     chat.saveSessionId('');
-    greetingRendered = false;
 
     initialGreeting = appConfig.ui?.greeting || "Hej! Jag är Bosse. Hur kan jag hjälpa dig?";
     const introText = document.getElementById('introText');
