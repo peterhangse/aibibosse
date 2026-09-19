@@ -26,7 +26,7 @@ Resultat: `https://aibibosse.web.app`.
 ## Automatisk deploy till Firebase Hosting (GitHub Actions)
 
 Repot innehåller en workflow i
-`/home/runner/work/aibibosse/aibibosse/.github/workflows/firebase-hosting-deploy.yml`
+`.github/workflows/firebase-hosting-deploy.yml`
 som deployar till Firebase Hosting vid push till `main` eller `master`.
 
 Sätt följande repository secret i GitHub för att den ska fungera:
