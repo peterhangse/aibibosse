@@ -126,11 +126,11 @@ async function sendAudio(blob) {
 }
 
 async function handleSend(text) {
-    enterConversationMode();
     avatar.nod();
     avatar.setThinking(true);
     chat.appendMessage(text, 'user');
     chat.scrollToBottom();
+    enterConversationMode();
     input.setTyping(true);
     chat.appendTyping();
     chat.scrollToBottom();
