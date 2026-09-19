@@ -152,7 +152,7 @@ body {
 .input-area {
     padding: 12px 20px 16px;
     border-top: 1px solid var(--border);
-    background: var(--card);
+    background-color: var(--card);
     flex-shrink: 0;
     padding-bottom: calc(16px + env(safe-area-inset-bottom));
     position: sticky;
