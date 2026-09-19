@@ -18,19 +18,21 @@ body {
     background: var(--bg);
     color: var(--text);
     min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px;
+    padding: max(20px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
 }
 
 .app-container {
     width: 100%;
     max-width: 560px;
-    height: 100vh;
+    height: min(900px, calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 40px));
     max-height: 900px;
     display: flex;
     flex-direction: column;
+    min-height: 0;
 }
 
 .chat-wrapper {
@@ -42,6 +44,15 @@ body {
     flex-direction: column;
     overflow: hidden;
     border: 1px solid var(--border);
+}
+
+.chat-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 0 0 8px;
+    scroll-behavior: smooth;
 }
 
 /* Avatar — kompakt */
@@ -70,17 +81,15 @@ body {
 
 /* Chat — ren, utan konstiga linjer */
 .chat-history {
-    flex: 1;
-    overflow-y: auto;
-    padding: 8px 20px;
+    padding: 8px 20px 0;
     display: flex;
     flex-direction: column;
     gap: 10px;
-    scroll-behavior: smooth;
+    min-height: min-content;
 }
 
-.chat-history::-webkit-scrollbar { width: 6px; }
-.chat-history::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+.chat-scroll::-webkit-scrollbar { width: 6px; }
+.chat-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
 .message {
     max-width: 85%;
@@ -127,6 +136,7 @@ body {
     border-top: 1px solid var(--border);
     background: var(--card);
     flex-shrink: 0;
+    padding-bottom: calc(16px + env(safe-area-inset-bottom));
 }
 
 .input-wrapper { display: flex; gap: 10px; align-items: center; }
@@ -214,8 +224,10 @@ body {
 
 @media (max-width: 600px) {
     body { padding: 0; }
-    .app-container { max-width: 100%; max-height: 100vh; height: 100vh; }
+    .app-container { max-width: 100%; max-height: none; height: 100dvh; }
     .chat-wrapper { border-radius: 0; border: none; }
+    .chat-scroll { padding-bottom: 4px; }
+    .avatar-section { padding: 8px 14px 4px; }
 }
 /* ===== BOSSE-FAS2-START - tillagt av bosse-fas2-frontend.sh ===== */
 
@@ -225,6 +237,8 @@ body {
     --success: #6b8e6b;
     --danger: #c45c5c;
 }
+
+.hidden { display: none !important; }
 
 /* Meddelandegrupp: bubbla + feedbackrad. Bubblan behåller sitt utseende,
    men flyttas in i en grupp så knapparna kan ligga utanför den. */
@@ -602,6 +616,12 @@ body {
 .quick-chip:hover { background: #faf3ea; transform: translateY(-1px); box-shadow: 0 3px 10px rgba(139,94,60,.14); }
 .quick-chip:active { transform: scale(0.97); }
 
+.chat-wrapper.chat-started .avatar-section,
+.chat-wrapper.chat-started .intro-box,
+.chat-wrapper.chat-started .quick-chips {
+    display: none;
+}
+
 /* ===== Läs upp-knapp (tillgänglighet: äldre, synnedsättning, läsovana) ===== */
 .read-btn {
     display: inline-flex;
@@ -672,3 +692,14 @@ body {
 
 /* ===== Attract-läget visar gubben utan text-positionering under ===== */
 .attract-overlay .bosse-scene-wrap { border: none; box-shadow: 0 10px 40px rgba(139,94,60,.18); }
+
+@media (max-width: 600px) {
+    .bosse-scene-wrap { max-width: 220px; margin-bottom: 6px; }
+    .bosse-name { font-size: 18px; }
+    .bosse-title { font-size: 12px; }
+    .bosse-workplace { font-size: 11px; }
+    .quick-chips { gap: 6px; margin-bottom: 10px; padding: 0 12px; }
+    .quick-chip { font-size: 13px; padding: 8px 12px; }
+    .chat-history { padding-left: 14px; padding-right: 14px; }
+    .input-area { padding-left: 14px; padding-right: 14px; }
+}
