@@ -1,29 +1,33 @@
-# aibibosse — sjöbo biblioteks AI-värd
+# aibibosse
 
-Huvudmapp med tre skärmar + kiosk, redo för Firebase Hosting.
+Sjöbo bibliotek — AI-värd. Tre roller i ett repo (offentligt).
 
-## Struktur
+| Skärm | Fil | Nivå |
+|---|---|---|
+| Medborgare (kiosk) | `ui/kiosk/` | publik |
+| Personal | `ui/personal.html` | intern |
+| Admin | `ui/admin.html` | admin (token) |
 
-```
-ui/
-  index.html      Medborgare (publik kiosk-start)
-  personal.html   Personal (intern nivå)
-  admin.html      Admin (kräver token)
-  kiosk/          AiBi-kiosken (landning + chattklient)
-  backend/        (ej hostat — kräver FastAPI + Ollama)
-```
+## Publicera på webben (web.app)
 
-## Deploy
-
-Statisk hosting täcker **bara UI-skalen**. Chatten kräver en backend
-(FastAPI + Ollama) — kan inte köras på Firebase Hosting.
+Chatten kräver en live-backend (FastAPI + Ollama) — **Firebase Hosting är
+statiskt och kan bara hosta UI-skalen**, inte chatten. För ren statisk
+publicering av gränssnitten:
 
 ```bash
-firebase login          # interaktivt — krävs av dig
+cd /home/nyhetsfabriken/projekt/aibibosse
+firebase login            # interaktivt — kräver din inloggning
+firebase projects:create aibibosse   # välj/ändra projekt-ID i .firebaserc
 firebase deploy --only hosting
 ```
 
-## Korsreferens
+Resultat: `https://aibibosse.web.app`.
 
-- `bosse` · FastAPI :8086 + SSE `/api/chat` + admin-token
-- `AiBibliotekarie` · korpus, retrieval, kiosk
+## Ta bort Firebase-koppling om du inte vill hosta
+
+Radera `.firebaserc` och `firebase.json`.
+
+## Notis
+
+Inga tokens/nycklar i repot — `BOSSE_ADMIN_TOKEN` ligger i systemd-enheten,
+inte i kod.
