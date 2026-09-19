@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bosse — Personalskärm — Sjöbo bibliotek</title>
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  .staff-banner {
+    background: #1f3a5f; color: #fff; padding: 10px 20px; font-size: 14px;
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    border-radius: 999px; max-width: 720px; margin: 0 auto 8px;
+  }
+  .staff-banner a { color: #cfe0f5; text-decoration: none; font-size: 13px; }
+  .app-container { padding-top: 8px; }
+</style>
+</head>
+<body>
+<div class="staff-banner">
+  <span><strong>Personalskärm</strong> — ser även interna dokument (rutiner &amp; policys)</span>
+  <span style="display:flex;gap:12px;">
+    <a href="/">Medborgarskärm</a>
+    <a href="/admin.html">Admin</a>
+  </span>
+</div>
+<div class="app-container">
+<div class="chat-wrapper">
+<div class="avatar-section" id="avatarSection"></div>
+<div class="intro-box" id="introBox"><p class="intro-text" id="introText"></p></div>
+<div class="chat-history" id="chatHistory"></div>
+<div class="input-area" id="inputArea"></div>
+</div>
+</div>
+<script>window.AIBI_NIVA = 'personal';</script>
+<script src="components/avatar.js"></script>
+<script src="components/chat.js"></script>
+<script src="components/input.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bosse — Bibliotekets digitala värd</title>
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="app-container">
+<div class="chat-wrapper">
+<div class="avatar-section" id="avatarSection"></div>
+<div class="intro-box" id="introBox"><p class="intro-text" id="introText"></p></div>
+<div class="quick-chips" id="quickChips"></div>
+<div class="chat-history" id="chatHistory"></div>
+<div class="input-area" id="inputArea"></div>
+</div>
+</div>
+<div class="attract-overlay hidden" id="attractOverlay">
+  <div class="attract-scene" id="attractScene"></div>
+  <div class="attract-title" id="attractTitle">Hej! Bosse är här.</div>
+  <div class="attract-sub" id="attractSub">Tryck här och fråga mig om böcker, öppettider eller biblioteket.</div>
+  <div class="attract-open" id="attractOpen"></div>
+  <div class="attract-press"><span class="dot"></span> Tryck var som helst för att börja</div>
+</div>
+<script src="components/avatar.js"></script>
+<script src="components/chat.js"></script>
+<script src="components/input.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

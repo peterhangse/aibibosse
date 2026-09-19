@@ -1,0 +1,674 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+    --bg: #f5f0e8;
+    --card: #ffffff;
+    --text: #2c2c2c;
+    --text-muted: #6b6b6b;
+    --accent: #c45c26;
+    --accent-light: #e8d5c4;
+    --border: #e0d8cc;
+    --shadow: 0 4px 24px rgba(0,0,0,0.06);
+    --radius: 20px;
+    --radius-sm: 12px;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.app-container {
+    width: 100%;
+    max-width: 560px;
+    height: 100vh;
+    max-height: 900px;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-wrapper {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid var(--border);
+}
+
+/* Avatar — kompakt */
+.avatar-section {
+    text-align: center;
+    padding: 16px 20px 8px;
+    flex-shrink: 0;
+}
+
+.avatar-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--accent-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 8px;
+    border: 3px solid var(--accent);
+    box-shadow: 0 4px 16px rgba(196, 92, 38, 0.15);
+}
+
+.avatar-emoji { font-size: 30px; line-height: 1; }
+.bosse-name { font-size: 20px; font-weight: 600; margin-bottom: 2px; }
+.bosse-title { font-size: 13px; color: var(--text-muted); }
+
+/* Chat — ren, utan konstiga linjer */
+.chat-history {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    scroll-behavior: smooth;
+}
+
+.chat-history::-webkit-scrollbar { width: 6px; }
+.chat-history::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+.message {
+    max-width: 85%;
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 15px;
+    line-height: 1.5;
+    animation: fadeIn 0.3s ease;
+    word-wrap: break-word;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.message.user {
+    align-self: flex-end;
+    background: var(--accent);
+    color: white;
+    border-bottom-right-radius: 4px;
+    margin-left: auto;
+}
+
+.message.bosse {
+    align-self: flex-start;
+    background: #f0ebe3;
+    color: var(--text);
+    border-bottom-left-radius: 4px;
+    border: 1px solid var(--border);
+}
+
+.message.typing {
+    align-self: flex-start;
+    background: #f0ebe3;
+    color: var(--text-muted);
+    font-style: italic;
+    border: 1px solid var(--border);
+}
+
+/* Input */
+.input-area {
+    padding: 12px 20px 16px;
+    border-top: 1px solid var(--border);
+    background: var(--card);
+    flex-shrink: 0;
+}
+
+.input-wrapper { display: flex; gap: 10px; align-items: center; }
+
+#userInput {
+    flex: 1;
+    padding: 12px 16px;
+    border: 2px solid var(--border);
+    border-radius: 28px;
+    font-size: 15px;
+    font-family: inherit;
+    background: #faf7f2;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#userInput:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(196, 92, 38, 0.1);
+}
+
+#userInput::placeholder { color: #aaa; }
+#userInput:disabled { background: #f0ece6; color: #999; }
+
+.mic-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    background: #e8d5c4;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.mic-btn:hover { background: var(--accent-light); transform: scale(1.05); }
+.mic-btn.recording { background: #f44336; color: white; animation: pulse 1s infinite; }
+@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+
+.send-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    background: var(--accent);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.15s, background 0.2s;
+    flex-shrink: 0;
+}
+
+.send-btn:hover { background: #a84d1f; transform: scale(1.05); }
+.send-btn:active { transform: scale(0.95); }
+.send-btn:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+
+.status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ccc;
+    transition: background 0.3s;
+}
+
+.status-dot.online { background: #4caf50; box-shadow: 0 0 6px rgba(76,175,80,0.4); }
+.status-dot.offline { background: #f44336; }
+.status-dot.dummy { background: #ff9800; }
+
+@media (max-width: 600px) {
+    body { padding: 0; }
+    .app-container { max-width: 100%; max-height: 100vh; height: 100vh; }
+    .chat-wrapper { border-radius: 0; border: none; }
+}
+/* ===== BOSSE-FAS2-START - tillagt av bosse-fas2-frontend.sh ===== */
+
+:root {
+    /* Saknades tidigare men refererades av flera hover-regler. */
+    --accent-soft: #f5ece0;
+    --success: #6b8e6b;
+    --danger: #c45c5c;
+}
+
+/* Meddelandegrupp: bubbla + feedbackrad. Bubblan behåller sitt utseende,
+   men flyttas in i en grupp så knapparna kan ligga utanför den. */
+.msg-group {
+    display: flex;
+    flex-direction: column;
+    max-width: 88%;
+    gap: 2px;
+}
+
+.msg-group.user {
+    align-self: flex-end;
+    align-items: flex-end;
+}
+
+.msg-group.bosse {
+    align-self: flex-start;
+    align-items: flex-start;
+}
+
+.msg-group .message {
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+/* ===== Tumme upp / ner ===== */
+.message-feedback {
+    display: flex;
+    gap: 6px;
+    padding-left: 2px;
+    opacity: 0.65;
+    transition: opacity 0.2s;
+}
+
+.message-feedback:hover {
+    opacity: 1;
+}
+
+.feedback-btn {
+    background: none;
+    border: 1px solid var(--border, #e8e0d4);
+    border-radius: 12px;
+    padding: 3px 9px;
+    font-size: 14px;
+    line-height: 1.2;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.feedback-btn:hover {
+    background: var(--accent-soft);
+    border-color: var(--accent-light, #d4b896);
+    transform: scale(1.06);
+}
+
+.feedback-btn.up:hover {
+    background: #e8f5e9;
+    border-color: var(--success);
+}
+
+.feedback-btn.down:hover {
+    background: #ffebee;
+    border-color: var(--danger);
+}
+
+.feedback-btn.voted {
+    opacity: 0.45;
+    pointer-events: none;
+}
+
+.feedback-thanks {
+    font-size: 12px;
+    color: var(--success);
+    padding-left: 2px;
+}
+
+/* ===== Källkort ===== */
+.msg-sources {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+    padding-left: 2px;
+    max-width: 82%;
+}
+.sources-label {
+    font-size: 11px;
+    color: var(--muted, #8a8279);
+    margin-right: 4px;
+}
+.source-chip {
+    border: 1px solid var(--accent-light, #d4b896);
+    background: #fdfaf5;
+    color: var(--accent, #8b5e3c);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.15s;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.source-chip:hover {
+    background: var(--accent-soft, #f2e8db);
+}
+.sources-hint {
+    font-size: 10px;
+    color: var(--muted, #8a8279);
+    opacity: 0.7;
+}
+
+/* ===== Prata med en bibliotekarie ===== */
+.human-btn {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    padding: 11px;
+    background: transparent;
+    border: 1.5px dashed var(--accent-light, #d4b896);
+    border-radius: 14px;
+    color: var(--accent, #8b5e3c);
+    font-size: 14px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-height: 44px;
+}
+
+.human-btn:hover:not(:disabled) {
+    background: var(--accent-soft);
+    border-style: solid;
+}
+
+.human-btn:disabled {
+    cursor: default;
+    opacity: 0.75;
+}
+
+.human-btn.sent {
+    border-style: solid;
+    border-color: var(--success);
+    color: var(--success);
+    background: #f2f7f2;
+}
+
+/* ===== Mobil och touch ===== */
+@media (max-width: 600px) {
+    .message { font-size: 16px; }
+    .human-btn { font-size: 15px; padding: 13px; }
+}
+
+/* Textstorlek 16px hindrar iOS från att zooma in vid fokus. */
+#userInput { font-size: 16px; }
+
+/* Grövre träffytor när det inte finns någon muspekare. */
+@media (hover: none) {
+    .feedback-btn { padding: 7px 13px; font-size: 16px; }
+    .mic-btn, .send-btn { width: 50px; height: 50px; min-width: 50px; }
+}
+
+/* Respektera systeminställning för minskad rörelse. */
+@media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+}
+
+/* ===== BOSSE-FAS2-SLUT ===== */
+/* ===== BOSSE-GRAFIK-START ===== */
+
+/* Illustrationen ligger i en inramad ruta i stället för att bre ut sig
+   till kanterna. Då spelar det ingen roll hur avatar-sektionens padding
+   är satt - ramen ser avsiktlig ut oavsett. */
+.bosse-scene-wrap {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto 10px;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--border, #e8e0d4);
+    box-shadow: 0 4px 16px rgba(139, 94, 60, 0.10);
+    line-height: 0;
+}
+
+.bosse-scene {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+/* Andning: hela figuren, inte disken eller hyllan bakom. */
+.bosse-breathe {
+    animation: bosseBreathe 4.6s ease-in-out infinite;
+    transform-box: fill-box;
+    transform-origin: center bottom;
+}
+
+@keyframes bosseBreathe {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-2.5px); }
+}
+
+/* Blinkning: nästan hela tiden öppna ögon, en kort blinkning per varv. */
+.bosse-eyes {
+    animation: bosseBlink 5.4s infinite;
+    transform-box: fill-box;
+    transform-origin: center;
+}
+
+@keyframes bosseBlink {
+    0%, 93%, 100% { transform: scaleY(1); }
+    96%           { transform: scaleY(0.12); }
+}
+
+/* En nick när sidan laddas - i stället för en vinkande arm, som lätt
+   ser trasig ut i så små storlekar. */
+.bosse-greet.greeting {
+    animation: bosseGreet 1.2s ease-in-out 1;
+    transform-box: fill-box;
+    transform-origin: center bottom;
+}
+
+@keyframes bosseGreet {
+    0%, 100% { transform: rotate(0deg); }
+    28%      { transform: rotate(-2.6deg); }
+    62%      { transform: rotate(1.8deg); }
+}
+
+/* Munnen: leende i vila, rör sig när han svarar. */
+.bosse-mouth-open {
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+}
+
+.bosse-mouth-smile,
+.bosse-mouth-open { transition: opacity 0.14s ease; }
+
+.bosse-scene.talking .bosse-mouth-smile { opacity: 0; }
+
+.bosse-scene.talking .bosse-mouth-open {
+    opacity: 1;
+    animation: bosseTalk 0.36s ease-in-out infinite alternate;
+}
+
+@keyframes bosseTalk {
+    from { transform: scaleY(0.45) scaleX(0.92); }
+    to   { transform: scaleY(1.15) scaleX(1.05); }
+}
+
+.bosse-name {
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0 0 2px;
+}
+
+.bosse-title {
+    font-size: 13px;
+    color: var(--text-muted, #8a8279);
+    margin: 0;
+}
+
+.bosse-workplace {
+    font-size: 12px;
+    color: var(--accent, #8b5e3c);
+    font-weight: 500;
+    margin: 2px 0 0;
+}
+
+/* ===== Bosse tänker ===== */
+.typing-bubble {
+    align-self: flex-start;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    max-width: 88%;
+    padding: 13px 17px;
+    background: #f0ebe3;
+    border: 1px solid var(--border, #e8e0d4);
+    border-radius: 18px;
+    border-bottom-left-radius: 4px;
+}
+
+.typing-bubble .typing-text {
+    font-size: 13px;
+    font-style: italic;
+    color: var(--text-muted, #8a8279);
+}
+
+.typing-dots {
+    display: inline-flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.typing-dots span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent-light, #d4b896);
+    animation: bosseDots 1.4s infinite ease-in-out both;
+}
+
+.typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+.typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes bosseDots {
+    0%, 80%, 100% { transform: scale(0.4); opacity: 0.45; }
+    40%           { transform: scale(1);   opacity: 1; }
+}
+
+@media (max-width: 600px) {
+    .bosse-scene-wrap { max-width: 260px; }
+    .bosse-name { font-size: 20px; }
+}
+
+/* Stänger av all rörelse för den som valt det i sitt operativsystem. */
+@media (prefers-reduced-motion: reduce) {
+    .bosse-breathe,
+    .bosse-eyes,
+    .bosse-greet.greeting,
+    .bosse-scene.talking .bosse-mouth-open,
+    .typing-dots span {
+        animation: none !important;
+    }
+    .typing-dots span { transform: scale(0.8); opacity: 0.7; }
+    .bosse-scene.thinking .bosse-breathe { transform: none; }
+    .bosse-scene.thinking .bosse-eyes { transform: none; }
+    .bosse-scene.thinking .bosse-eyebrows { transform: none; }
+    .quick-chip { transition: none; }
+    .attract-overlay .attract-press .dot { animation: none; }
+}
+
+/* ===== BOSSE-GRAFIK-SLUT ===== */
+
+/* ===== Tänkande: blicken söker uppåt, ögonbrynen lyfter, kroppen håller andan. */
+.bosse-scene.thinking .bosse-breathe {
+    animation: none;
+    transform: rotate(-1.4deg) scaleY(0.985);
+}
+.bosse-scene.thinking .bosse-eyes {
+    animation: none;
+    transform: translateY(-2.5px) scaleY(0.92);
+}
+.bosse-scene.thinking .bosse-eyebrows {
+    transform: translateY(-2.8px);
+    transform-box: fill-box;
+}
+.bosse-scene.thinking .bosse-mouth-smile { opacity: 0.55; }
+.bosse-eyebrows { transition: transform 0.35s ease; }
+
+/* ===== Förslagschips: klickbara snabbfrågor, slipper skriva på kiosken ===== */
+.quick-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin: 0 auto 14px;
+    max-width: 540px;
+}
+.quick-chip {
+    border: 1.5px solid var(--border, #e8e0d4);
+    background: #fff;
+    color: var(--accent, #8b5e3c);
+    padding: 9px 16px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform 0.12s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+.quick-chip:hover { background: #faf3ea; transform: translateY(-1px); box-shadow: 0 3px 10px rgba(139,94,60,.14); }
+.quick-chip:active { transform: scale(0.97); }
+
+/* ===== Läs upp-knapp (tillgänglighet: äldre, synnedsättning, läsovana) ===== */
+.read-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    border: none;
+    background: transparent;
+    color: var(--text-muted, #8a8279);
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+.read-btn:hover { background: #f0ebe3; color: var(--accent, #8b5e3c); }
+.read-btn.speaking { background: #e8f5e9; color: #2e7d32; }
+.message-feedback { display: flex; align-items: center; gap: 4px; }
+
+/* ===== Idle/attract-läge: stillbild som säger "tryck här" på kiosken ===== */
+.attract-overlay {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(160deg, var(--bg, #f5f0e8) 0%, #efe5d6 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 10px;
+    z-index: 50;
+    padding: 32px;
+    cursor: pointer;
+}
+.attract-overlay.hidden { display: none; }
+.attract-overlay .attract-scene { max-width: 380px; width: 100%; margin: 0 auto; }
+.attract-overlay .attract-title {
+    font-size: clamp(22px, 4.5vw, 34px);
+    font-weight: 700;
+    color: var(--accent, #8b5e3c);
+    margin: 12px 0 4px;
+}
+.attract-overlay .attract-sub { color: var(--text-muted, #8a8279); font-size: 17px; }
+.attract-overlay .attract-open {
+    margin-top: 18px;
+    background: #fff;
+    border: 1px solid var(--border, #e8e0d4);
+    border-radius: 999px;
+    padding: 11px 22px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #2e7d32;
+    box-shadow: 0 4px 16px rgba(0,0,0,.06);
+}
+.attract-overlay .attract-press {
+    margin-top: 22px;
+    font-size: 15px;
+    color: var(--accent, #8b5e3c);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+.attract-overlay .attract-press .dot {
+    width: 11px; height: 11px; border-radius: 50%;
+    background: #c45c5c;
+    animation: pulse 1.6s ease-in-out infinite;
+}
+
+/* ===== Attract-läget visar gubben utan text-positionering under ===== */
+.attract-overlay .bosse-scene-wrap { border: none; box-shadow: 0 10px 40px rgba(139,94,60,.18); }

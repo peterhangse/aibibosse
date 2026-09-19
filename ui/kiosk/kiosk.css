@@ -1,0 +1,137 @@
+:root {
+  --bla: #123c6d;
+  --bla-mork: #0b2a4e;
+  --bla-ljus: #2c6cb0;
+  --akcent: #e9a23b;
+  --bak: #f4f6fa;
+  --vit: #ffffff;
+  --text: #1c2733;
+  --lystext: #d8e4f2;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { height: 100%; }
+
+body {
+  font-family: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: var(--bak);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ── Topp ─────────────────────────────────── */
+.topp {
+  background: linear-gradient(135deg, var(--bla-mork), var(--bla));
+  color: var(--vit);
+  padding: 20px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.brand { display: flex; align-items: center; gap: 16px; }
+.logo {
+  width: 56px; height: 56px;
+  background: var(--akcent);
+  color: var(--bla-mork);
+  font-weight: 800; font-size: 30px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 14px;
+}
+.topp h1 { font-size: 26px; font-weight: 700; }
+.tagline { color: var(--lystext); font-size: 15px; }
+
+.langpick { display: flex; gap: 6px; }
+.langbtn {
+  border: 1px solid rgba(255,255,255,.4);
+  background: transparent; color: var(--vit);
+  font-size: 15px; font-weight: 700;
+  padding: 10px 16px; border-radius: 10px;
+  cursor: pointer;
+}
+.langbtn.active { background: var(--vit); color: var(--bla-mork); }
+
+/* ── Chattyta ─────────────────────────────── */
+.chatt { flex: 1; overflow-y: auto; padding: 24px 28px; display: flex; flex-direction: column; gap: 14px; }
+
+.talon { align-self: flex-end; max-width: 78%; }
+.svar { align-self: flex-start; max-width: 86%; }
+
+.bubbla {
+  padding: 14px 18px; border-radius: 16px; font-size: 17px; line-height: 1.5;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08);
+}
+.talon .bubbla { background: var(--bla); color: var(--vit); border-bottom-right-radius: 5px; }
+.svar .bubbla { background: var(--vit); color: var(--text); border-bottom-left-radius: 5px; border: 1px solid #e3e8f0; }
+
+.kallor { margin-top: 8px; font-size: 13px; color: #56697e; }
+.kalla { display: inline-block; background: #eef2f8; border-radius: 20px; padding: 4px 12px; margin: 2px 4px 2px 0; }
+
+/* ── Kortrad ──────────────────────────────── */
+.kortrad { display: flex; gap: 12px; flex-wrap: wrap; padding: 0 28px; }
+
+.kort {
+  background: var(--vit); border-radius: 16px; border: 1px solid #e3e8f0;
+  padding: 16px 18px; width: 300px; box-shadow: 0 1px 3px rgba(0,0,0,.08);
+  display: flex; flex-direction: column; gap: 6px;
+}
+.kort .etiket {
+  font-size: 12px; font-weight: 800; text-transform: uppercase;
+  letter-spacing: .05em; color: var(--bla-ljus);
+}
+.kort h3 { font-size: 17px; color: var(--bla-mork); }
+.kort p { font-size: 14px; color: #3c4d5e; }
+.kort .tillganglig { color: #1d7a3f; font-weight: 700; }
+.kort .utlanad { color: #c0392b; font-weight: 700; }
+
+.kort.oppettid { background: linear-gradient(135deg, #eaf1fb, #f7fafd); }
+.kort.evenemang { border-top: 4px solid var(--akcent); }
+
+/* ── Inmatning ────────────────────────────── */
+.inmatning {
+  background: var(--vit); border-top: 1px solid #e3e8f0;
+  padding: 14px 28px 20px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.rad { display: flex; gap: 10px; }
+#fragainput {
+  flex: 1; font-size: 19px; padding: 16px 18px;
+  border: 2px solid #d4deeb; border-radius: 14px;
+  outline: none;
+}
+#fragainput:focus { border-color: var(--bla-ljus); }
+#skicka {
+  background: var(--bla); color: var(--vit);
+  border: 0; border-radius: 14px; font-size: 19px; font-weight: 700;
+  padding: 0 26px; cursor: pointer;
+}
+#skicka:active { background: var(--bla-ljus); }
+
+.forslag { display: flex; gap: 8px; flex-wrap: wrap; }
+.forslag button {
+  background: #eef2f8; border: 1px solid #d4deeb; color: var(--bla-mork);
+  padding: 8px 14px; border-radius: 22px; font-size: 14px; cursor: pointer;
+}
+
+/* ── Fot ──────────────────────────────────── */
+.fot {
+  background: var(--bla-mork); color: var(--lystext);
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 28px; font-size: 13px;
+}
+.nytt {
+  background: transparent; border: 1px solid rgba(255,255,255,.4);
+  color: var(--vit); padding: 8px 14px; border-radius: 10px; cursor: pointer;
+}
+
+@media (max-width: 640px) {
+  .kort { width: 100%; }
+  .topp { padding: 14px 16px; }
+  .chatt { padding: 16px; }
+  .inmatning { padding: 12px 16px 16px; }
+}

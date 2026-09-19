@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sjöbo bibliotek — Fråga AI-bibliotekarien</title>
+<link rel="stylesheet" href="kiosk.css">
+</head>
+<body>
+<header class="topp">
+  <div class="brand">
+    <span class="logo">S</span>
+    <div>
+      <h1>Sjöbo bibliotek</h1>
+      <p class="tagline">Fråga AI-bibliotekarien</p>
+    </div>
+  </div>
+  <div class="langpick">
+    <button class="langbtn active" data-lang="sv">SV</button>
+    <button class="langbtn" data-lang="en">EN</button>
+  </div>
+</header>
+
+<main>
+  <section class="forfall"><!-- tunn sektion för att få rätt avstånd --></section>
+
+  <section class="chatt" aria-live="polite">
+    <div id="meddelanden" class="meddelanden"></div>
+    <div id="kort" class="kortrad"></div>
+  </section>
+</main>
+
+<form id="fragform" class="inmatning">
+  <div class="forslag" id="forslag"></div>
+  <div class="rad">
+    <input id="fragainput" type="text" autocomplete="off" maxlength="300"
+           placeholder="Skriv din fråga…" aria-label="Din fråga">
+    <button id="skicka" type="submit" aria-label="Skicka fråga">Fr&aring;ga</button>
+  </div>
+</form>
+
+<footer class="fot">
+  <span>Källgrundad &mdash; svar bygger på bibliotekets egna fakta.</span>
+  <button id="nytt" class="nytt">Nytt försök</button>
+</footer>
+
+<script src="kiosk.js"></script>
+</body>
+</html>

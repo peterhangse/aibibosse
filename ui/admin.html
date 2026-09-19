@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bosse — Admin — Sjöbo bibliotek</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Inter',system-ui,-apple-system,sans-serif; background:#f5f0e8; color:#2d2a26; min-height:100vh; }
+  header { background:#8b5e3c; color:#fff; padding:18px 28px; display:flex; justify-content:space-between; align-items:center; }
+  header h1 { font-size:20px; }
+  header nav a { color:#e8d5c0; text-decoration:none; font-size:14px; margin-left:16px; }
+  .wrap { max-width:1100px; margin:0 auto; padding:24px; }
+  .tabs { display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; }
+  .tab { padding:10px 18px; border:none; border-radius:999px; background:#e8e0d4; color:#5a5147; font-size:14px; cursor:pointer; }
+  .tab.active { background:#8b5e3c; color:#fff; }
+  .card { background:#fff; border-radius:16px; padding:20px; box-shadow:0 4px 24px rgba(0,0,0,.06); margin-bottom:18px; }
+  .card h2 { font-size:16px; margin-bottom:14px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; }
+  .stat { padding:14px; border-radius:12px; background:#faf6f0; }
+  .stat .label { font-size:11px; text-transform:uppercase; letter-spacing:.5px; color:#8a8279; }
+  .stat .value { font-size:26px; font-weight:700; color:#8b5e3c; margin-top:4px; }
+  .stat .sub { font-size:12px; color:#8a8279; margin-top:2px; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th,td { padding:9px 12px; text-align:left; border-bottom:1px solid #eee6da; vertical-align:top; }
+  th { background:#f0ebe3; font-size:11px; text-transform:uppercase; letter-spacing:.5px; color:#8a8279; }
+  .badge { display:inline-block; padding:2px 9px; border-radius:999px; font-size:11px; font-weight:600; }
+  .badge-publik { background:#e8f5e9; color:#2e7d32; }
+  .badge-intern { background:#fff3e0; color:#e65100; }
+  .badge-flag { background:#fce4ec; color:#c2185b; }
+  .dim { opacity:.55; }
+  button { cursor:pointer; border:none; border-radius:10px; padding:8px 14px; font-size:13px; font-weight:600; }
+  .btn-primary { background:#8b5e3c; color:#fff; }
+  .btn-primary:hover { background:#6d4c30; }
+  .btn-ghost { background:#f0ebe3; color:#5a5147; }
+  .btn-danger { background:#fdecea; color:#c62828; }
+  .toolbar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:14px; }
+  .toolbar input, .toolbar select { padding:8px 12px; border:1px solid #ddd2c2; border-radius:10px; font-size:13px; background:#fff; }
+  .toolbar input[type=text] { min-width:200px; }
+  .login-box { max-width:400px; margin:80px auto; background:#fff; border-radius:16px; padding:28px; box-shadow:0 4px 24px rgba(0,0,0,.06); }
+  .login-box h2 { margin-bottom:6px; }
+  .login-box input { width:100%; padding:10px 12px; border:1px solid #ddd2c2; border-radius:10px; margin:12px 0; font-size:14px; }
+  .login-box button { width:100%; }
+  .msg { padding:12px 14px; border-radius:12px; font-size:13px; margin-bottom:14px; }
+  .msg-ok { background:#e8f5e9; color:#2e7d32; }
+  .msg-err { background:#fdecea; color:#c62828; }
+  .hidden { display:none; }
+  .muted { color:#8a8279; font-size:12px; }
+  .kalla-tag { font-size:11px; color:#8a8279; background:#f0ebe3; border-radius:6px; padding:1px 6px; }
+  .dropzone { border:2px dashed #c9b79c; border-radius:16px; padding:26px 18px; text-align:center; cursor:pointer; background:#faf6f0; transition:.15s; }
+  .dropzone:hover, .dz-active { border-color:#8b5e3c; background:#f3ece0; }
+  .dz-icon { font-size:32px; margin-bottom:6px; }
+  .file-lista { margin-top:12px; }
+  .filerad { display:flex; gap:10px; align-items:center; padding:10px 12px; border:1px solid #eee6da; border-radius:12px; margin-bottom:8px; background:#fff; flex-wrap:wrap; }
+  .filerad-namn { flex:1; min-width:200px; font-size:13px; }
+  .filerad select { padding:6px 8px; border:1px solid #ddd2c2; border-radius:8px; font-size:12px; }
+  .res-rad { padding:10px 12px; border-radius:12px; margin-bottom:8px; font-size:13px; border:1px solid #eee6da; }
+  .res-ok { background:#f5fbf5; }
+  .res-fel { background:#fff7f5; }
+  .res-det { margin-top:6px; }
+  .res-det summary { cursor:pointer; color:#8b5e3c; font-weight:600; font-size:12px; }
+  .res-fel-lista { margin-top:6px; font-size:12px; color:#c62828; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Bosse — adminpanel</h1>
+  <nav><a href="/">Medborgarskärm</a><a href="/personal.html">Personalskärm</a></nav>
+</header>
+
+<div id="loginModal" class="login-box hidden">
+  <h2>Admin-token</h2>
+  <p class="muted">Ange BOSSE_ADMIN_TOKEN (lämnas tomt om token är avstängd)</p>
+  <input id="tokenInput" type="password" placeholder="Token" autocomplete="off">
+  <button class="btn-primary" onclick="saveToken()">Spara och fortsätt</button>
+</div>
+
+<div class="wrap hidden" id="appWrap">
+  <div class="tabs">
+    <button class="tab active" data-tab="oversikt" onclick="showTab('oversikt')">Översikt</button>
+    <button class="tab" data-tab="dokument" onclick="showTab('dokument')">Dokument &amp; import</button>
+    <button class="tab" data-tab="katalog" onclick="showTab('katalog')">Katalogimport</button>
+    <button class="tab" data-tab="attgora" onclick="showTab('attgora')">Att göra</button>
+    <button class="tab" data-tab="kallor" onclick="showTab('kallor')">Källor</button>
+    <button class="tab" data-tab="konflikter" onclick="showTab('konflikter')">Konflikter</button>
+    <button class="tab" data-tab="fragelogg" onclick="showTab('fragelogg')">Frågelogg</button>
+    <button class="tab" data-tab="metrics" onclick="showTab('metrics')">Metrics</button>
+  </div>
+
+  <!-- ÖVERSIKT -->
+  <section id="tab-oversikt">
+    <div class="card"><div class="grid" id="ovStat"></div></div>
+    <div class="card">
+      <h2>Senaste importer</h2>
+      <div id="ovImporter"></div>
+    </div>
+    <div class="card">
+      <h2>Status &amp; drift</h2>
+      <div id="ovDrift"></div>
+    </div>
+  </section>
+
+  <!-- DOKUMENT & IMPORT -->
+  <section id="tab-dokument" class="hidden">
+    <div class="card">
+      <h2>Importera data</h2>
+      <p class="muted" style="margin-bottom:12px;">Dra och släpp en PDF, textfil, Markdown, JSON eller CSV här — varje fil
+         importeras direkt till korpusen och indexeras. PDF:er måste ha ett textlager (skannade exemplar flaggas som fel).</p>
+      <div id="dropZone" class="dropzone" tabindex="0" role="button" aria-label="Ladda upp datafil">
+        <div class="dz-icon">📄</div>
+        <div><strong>Dra och släpp dina filer här</strong><br><span class="muted">eller klicka för att välja filer</span></div>
+      </div>
+      <input id="fileInput" type="file" accept=".pdf,.txt,.md,.json,.csv" multiple hidden>
+      <div class="file-lista" id="fileRows"></div>
+      <div class="toolbar" style="margin-top:12px;">
+        <button class="btn-primary" id="doImportBtn" onclick="doImports()" disabled>Importera</button>
+        <button class="btn-ghost" onclick="rebuild()">Indexera om</button>
+        <span class="muted">Mallar:</span>
+        <button class="btn-ghost" onclick="downloadMall('md')">text (.md)</button>
+        <button class="btn-ghost" onclick="downloadMall('json')">JSON (.json)</button>
+        <span class="muted" id="uploadDocCount"></span>
+      </div>
+      <div id="importStatus"></div>
+      <div id="importResults"></div>
+    </div>
+    <div class="card">
+      <h2>Dokument</h2>
+      <div class="toolbar">
+        <input id="docQ" type="text" placeholder="Sök…" oninput="debounce(loadDocs, 400)">
+        <select id="docNiva" onchange="loadDocs()">
+          <option value="">Alla nivåer</option>
+          <option value="publik">Publik</option>
+          <option value="intern">Intern</option>
+        </select>
+        <select id="docTyp" onchange="loadDocs()">
+          <option value="">Alla typer</option>
+          <option value="bok">Bok</option>
+          <option value="tjanst">Tjänst</option>
+          <option value="evenemang">Evenemang</option>
+          <option value="oppettid">Öppettid</option>
+          <option value="rutin">Rutin</option>
+          <option value="policydokument">Policy</option>
+          <option value="dokument">Dokument</option>
+          <option value="bibliotek">Bibliotek</option>
+        </select>
+        <span class="muted" id="docCount"></span>
+      </div>
+      <div style="overflow:auto; max-height:520px;"><table>
+        <thead><tr><th>Typ</th><th>Titel / id</th><th>Nivå</th><th>Källa</th><th>Ägare</th><th>Granskad</th><th>Vektor</th><th></th></tr></thead>
+        <tbody id="docRows"><tr><td colspan="8" class="muted">Laddar…</td></tr></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- KATALOGIMPORT -->
+  <section id="tab-katalog" class="hidden">
+    <div class="card">
+      <h2>Katalogimport — BSKO (biblioteksso.se)</h2>
+      <p class="muted" style="margin-bottom:12px;">Ladda upp en exportfil från
+        Bibliotek SkåneSydost (Axiell Arena). Varje rad blir ett dokument
+        <span class="kalla-tag">bok-&lt;isbn&gt;</span> (ISBN-nycklat och idempotent —
+        samma källa körs om utan duplikat). Böcker med flera upplagor visas som
+        "andra utgåvor" via <span class="kalla-tag">meta.utgavor</span>.</p>
+      <div id="katDropZone" class="dropzone" tabindex="0" role="button" aria-label="Ladda upp katalogexport">
+        <div class="dz-icon">📚</div>
+        <div><strong>Dra och släpp katalogexporten här</strong><br><span class="muted">eller klicka för att välja fil (CSV från BSKO stöds)</span></div>
+      </div>
+      <input id="katFileInput" type="file" accept=".csv,.txt,.json" multiple hidden>
+      <div class="file-lista" id="katFileRows"></div>
+      <div class="toolbar" style="margin-top:12px;">
+        <button class="btn-primary" id="katImportBtn" onclick="doKatImports()" disabled>Importera</button>
+        <span class="muted">Tomma rader och icke-böcker rapporteras som fel, övriga importeras.</span>
+      </div>
+      <div id="katImportStatus"></div>
+      <div id="katImportResults"></div>
+    </div>
+    <div class="card">
+      <h2>Katalogstatus</h2>
+      <div class="grid" id="katStat"></div>
+      <div class="toolbar" style="margin-top:12px;">
+        <button class="btn-ghost" onclick="loadKatStats()">Uppdatera</button>
+        <span class="muted" id="katSenaste"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ATT GÖRA -->
+  <section id="tab-attgora" class="hidden">
+    <div class="card">
+      <h2>Att göra — uppgifter som kräver en människa</h2>
+      <p class="muted" style="margin-bottom:12px;">Här samlas projektarbete som inte kan automatiseras
+        (t.ex. att beställa en katalogexport eller köra hela crawl- &amp; berikningsjobben).
+        Bocka av det som är klart.</p>
+      <div class="toolbar">
+        <input id="todoRubrik" type="text" placeholder="Ny uppgift…" style="min-width:260px;">
+        <input id="todoDetalj" type="text" placeholder="Detalj (valfritt)">
+        <button class="btn-primary" onclick="todoAdd()">Lägg till</button>
+        <button class="btn-ghost" onclick="loadTodos()">Uppdatera</button>
+        <span class="muted" id="todoCount"></span>
+      </div>
+      <div style="overflow:auto; max-height:520px;"><table>
+        <thead><tr><th>Status</th><th>Uppgift</th><th>Detalj</th><th>Skapad</th><th>Klar</th><th></th></tr></thead>
+        <tbody id="todoRows"><tr><td colspan="6" class="muted">Laddar…</td></tr></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- KÄLLOR -->
+  <section id="tab-kallor" class="hidden">
+    <div class="card">
+      <h2>Registrera källa</h2>
+      <p class="muted" style="margin-bottom:12px;">En källa hämtas automatiskt enligt sitt intervall och importeras till korpusen.
+         Samma källa som körs om skriver över sig själv, andra krockar blir konflikter.</p>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:8px;">
+        <input id="srcNamn" type="text" placeholder="Källans namn (t.ex. Bibliotekets evenemang)">
+        <input id="srcUrl" type="text" placeholder="https://exempel.se/feed.xml">
+        <select id="srcTyp">
+          <option value="html">html — webbsida</option>
+          <option value="rss">rss — nyhetsflöde</option>
+          <option value="json">json — API/fil</option>
+          <option value="csv">csv</option>
+        </select>
+        <select id="srcNiva">
+          <option value="publik">Publik — besökare</option>
+          <option value="intern">Intern — personal</option>
+        </select>
+        <select id="srcIntervall">
+          <option value="60">Automatik: 1 timme</option>
+          <option value="1440" selected>Automatik: 1 dygn</option>
+          <option value="10080">Automatik: 1 vecka</option>
+        </select>
+        <button class="btn-primary" onclick="registreraKalla()">Lägg till källa</button>
+      </div>
+      <div id="srcStatus"></div>
+    </div>
+    <div class="card">
+      <h2>Aktiva källor</h2>
+      <div class="toolbar">
+        <button class="btn-ghost" onclick="loadSources()">Uppdatera</button>
+        <span class="muted" id="srcCount"></span>
+      </div>
+      <div id="srcList"><p class="muted">Laddar…</p></div>
+    </div>
+  </section>
+
+  <!-- KONFLIKTER -->
+  <section id="tab-konflikter" class="hidden">
+    <div class="card">
+      <h2>Konflikter vid import</h2>
+      <p class="muted" style="margin-bottom:12px;">Kollisioner där samma dokument-id dykt upp från en annan källa med avvikande innehåll.
+         Välj vilken version som ska vara giltig — befintlig behålls, ny skrivs över och indexeras.</p>
+      <div class="toolbar">
+        <button class="btn-ghost" onclick="loadConflicts('olost')">Olösta</button>
+        <button class="btn-ghost" onclick="loadConflicts('alla')">Alla</button>
+        <span class="muted" id="conflictCount"></span>
+      </div>
+      <div style="overflow:auto; max-height:560px;"><table>
+        <thead><tr><th>#</th><th>Dokument-id</th><th>Typ</th><th>Ämne</th><th>Befintlig källa</th><th>Ny källa</th><th>Status</th><th></th></tr></thead>
+        <tbody id="conflictRows"><tr><td colspan="8" class="muted">Laddar…</td></tr></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- FRÅGELOGG -->
+  <section id="tab-fragelogg" class="hidden">
+    <div class="card">
+      <h2>Frågelogg (governance)</h2>
+      <div style="overflow:auto; max-height:640px;"><table>
+        <thead><tr><th>Tid</th><th>Fråga</th><th>Fallback</th><th>Prompt</th><th>Modell</th><th>Källor</th></tr></thead>
+        <tbody id="logRows"><tr><td colspan="6" class="muted">Laddar…</td></tr></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- METRICS -->
+  <section id="tab-metrics" class="hidden">
+    <div class="card">
+      <h2>Svarslatens (24&nbsp;h)</h2>
+      <div class="grid" id="latGrid"></div>
+    </div>
+    <div class="card">
+      <h2>Analys</h2>
+      <div id="metricsAnalys"></div>
+    </div>
+    <div class="card">
+      <h2>Ägande &amp; granskning</h2>
+      <div class="grid" id="staleGrid"></div>
+    </div>
+  </section>
+</div>
+
+<script>
+let TOKEN = localStorage.getItem('bosse_admin_token') || '';
+
+function headers() { const h = {}; if (TOKEN) h['X-Admin-Token'] = TOKEN; return h; }
+
+function esc(s) { return String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function debounce(fn, ms) { let t; return () => { clearTimeout(t); t = setTimeout(fn, ms); }; }
+
+async function api(url, opts = {}) {
+  const r = await fetch(url, { ...opts, headers: { ...headers(), ...(opts.headers || {}) } });
+  if (r.status === 401) { showLogin(); throw new Error('unauthorized'); }
+  return r.json();
+}
+
+function showLogin() {
+  document.getElementById('appWrap').classList.add('hidden');
+  document.getElementById('loginModal').classList.remove('hidden');
+  document.getElementById('tokenInput').focus();
+}
+function hideLogin() {
+  document.getElementById('loginModal').classList.add('hidden');
+  document.getElementById('appWrap').classList.remove('hidden');
+}
+function saveToken() {
+  TOKEN = document.getElementById('tokenInput').value.trim();
+  localStorage.setItem('bosse_admin_token', TOKEN);
+  hideLogin(); loadAll();
+}
+
+function showTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+  ['oversikt','dokument','katalog','attgora','kallor','konflikter','fragelogg','metrics'].forEach(n => {
+    document.getElementById('tab-' + n).classList.toggle('hidden', n !== name);
+  });
+  if (name === 'dokument') loadDocs();
+  if (name === 'katalog') loadKatStats();
+  if (name === 'attgora') loadTodos();
+  if (name === 'kallor') loadSources();
+  if (name === 'konflikter') loadConflicts();
+  if (name === 'fragelogg') loadLog();
+  if (name === 'metrics') loadMetrics();
+}
+
+function loadAll() {
+  try { loadOverview(); loadDocs(); loadLog(); loadMetrics(); } catch {}
+}
+
+/* ---------- Översikt ---------- */
+async function loadOverview() {
+  let m = {}, a = {};
+  try { m = await api('/api/admin/metrics?hours=24'); } catch {}
+  try { a = await api('/api/admin/analytics'); } catch {}
+  const k = m.korpus || {};
+  const cards = [
+    ['Dokument i korpus', k.dokument ?? '–', k.interna ? k.interna + ' interna' : ''],
+    ['Fallback (strömavbrott)', m.analys?.fallbacks ?? '–', (m.analys?.fallback_rate ?? 0) + '% av frågorna'],
+    ['Latens p95', m.latens?.p95 != null ? m.latens.p95 + ' ms' : '–', m.latens?.n ? m.latens.n + ' mätningar' : 'inga ännu'],
+    ['Containment', a.containment_rate != null ? a.containment_rate + '%' : '–', 'löstes utan människa'],
+    ['Mänsklig hjälp', a.human_requests ?? '–', (a.escalated_sessions ?? 0) + ' sessioner'],
+    ['Feedback', a.avg_feedback ?? '–', (a.thumbs_up ?? 0) + ' tummar upp'],
+  ];
+  document.getElementById('ovStat').innerHTML = cards.map(([label, value, sub]) =>
+    `<div class="stat"><div class="label">${esc(label)}</div><div class="value">${esc(value)}</div>${sub ? `<div class="sub">${esc(sub)}</div>` : ''}</div>`).join('');
+
+  const imp = await api('/api/admin/imports?senaste=8');
+  document.getElementById('ovImporter').innerHTML = (imp.importer || []).length
+    ? '<table><tr><th>Tid</th><th>Fil</th><th>Format</th><th>Rader</th><th>Fel</th><th>Status</th></tr>' +
+      (imp.importer || []).map(i =>
+        `<tr><td class="muted">${esc(String(i.created_at).slice(0,16))}</td><td>${esc(i.filnamn)}</td>` +
+        `<td>${esc(i.format)}</td><td>${esc(i.rader_ok)}/${esc(i.rader_in)}</td>` +
+        `<td>${esc(i.rader_fel)}</td>` +
+        `<td><span class="badge ${i.rader_fel ? 'badge-flag' : 'badge-publik'}">${i.rader_fel ? 'Fel' : 'OK'}</span></td></tr>`).join('') + '</table>'
+    : '<p class="muted">Inga importer ännu.</p>';
+
+  try { await loadDrift(); } catch {}
+}
+
+async function loadDrift() {
+  const el = document.getElementById('ovDrift');
+  const d = await api('/api/admin/drift');
+  const r = d.rapport;
+  if (!r) { el.innerHTML = '<p class="muted">Ingen driftrapport ännu — skapas vid nästa driftkontroll.</p>'; return; }
+  const skapad = esc(String(r.skapad || '').slice(0, 16));
+  const ok = !!r.ok;
+  const stat = r.statistik || {};
+  const g = r.grounding || {};
+  const ks = r.konflikter || {};
+  const punkter = [
+    ['Fallback-rate', (stat.fallback_rate ?? 0) + '%', (stat.fallbacks ?? 0) + ' strömlösa svar'],
+    ['Latens p95', stat.latens_p95 != null ? stat.latens_p95 + ' ms' : '–', (stat.svar ?? 0) + ' svar'],
+    ['Grounding', g.andel_naiva != null ? g.andel_naiva + '%' : '–', 'senast stump: ' + esc(String(g.senast_naiva || '–').slice(0, 16))],
+    ['Olösta konflikter', ks.olosta ?? '–', (ks.totala ?? 0) + ' totalt'],
+  ];
+  const sakerHtml = (r.saker || []).length
+    ? '<div style="margin-top:12px;">' + (r.saker || []).map(s =>
+        `<div class="msg msg-err" style="margin-bottom:6px;">⚠️ ${esc(s)}</div>`).join('') + '</div>' : '';
+  const varningarHtml = (r.varningar || []).length
+    ? '<div style="margin-top:6px;">' + (r.varningar || []).map(v =>
+        `<div class="msg msg-ok" style="margin-bottom:6px;">${esc(v)}</div>`).join('') + '</div>' : '';
+  el.innerHTML =
+    `<div class="toolbar"><span class="badge ${ok ? 'badge-publik' : 'badge-flag'}">${ok ? 'OK' : 'Avvikelser'}</span>` +
+    `<span class="muted">rapport ${skapad}</span></div>` +
+    '<div class="grid">' + punkter.map(([label, value, sub]) =>
+      `<div class="stat"><div class="label">${esc(label)}</div><div class="value">${esc(value)}</div>` +
+      (sub ? `<div class="sub">${sub}</div>` : '') + '</div>').join('') + '</div>' +
+    sakerHtml + varningarHtml;
+}
+
+/* ---------- Dokument & import ---------- */
+function setMsg(el, ok, text) {
+  el.innerHTML = `<div class="msg ${ok ? 'msg-ok' : 'msg-err'}">${esc(text)}</div>`;
+}
+const MAX_UPLOADS = 20;
+let uploadQueue = [];
+
+function setupDropZone() {
+  const dz = document.getElementById('dropZone');
+  const fi = document.getElementById('fileInput');
+  dz.addEventListener('click', () => fi.click());
+  dz.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target === dz) { e.preventDefault(); fi.click(); } });
+  fi.addEventListener('change', () => { addFiles(fi.files); fi.value = ''; });
+  for (const t of ['dragover', 'dragenter']) dz.addEventListener(t, e => { e.preventDefault(); dz.classList.add('dz-active'); });
+  for (const t of ['dragleave', 'dragend']) dz.addEventListener(t, () => dz.classList.remove('dz-active'));
+  dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('dz-active'); addFiles(e.dataTransfer.files); });
+}
+
+function fmtSize(b) {
+  if (b >= 1048576) return (b / 1048576).toFixed(1) + ' MB';
+  if (b >= 1024) return (b / 1024).toFixed(0) + ' kB';
+  return b + ' B';
+}
+
+function addFiles(list) {
+  const nya = [...(list || [])].filter(f => !uploadQueue.some(q => q.name === f.name));
+  for (const f of nya) {
+    if (uploadQueue.length >= MAX_UPLOADS) break;
+    uploadQueue.push({ name: f.name, size: f.size, file: f, niva: 'publik', status: 'kö', tr: null });
+  }
+  renderQueue();
+}
+
+function setRowNiva(i, v) { uploadQueue[i].niva = v; }
+function removeRow(i) { uploadQueue.splice(i, 1); renderQueue(); }
+
+function statusBadge(s) {
+  if (s === 'klar') return '<span class="badge badge-publik">klar</span>';
+  if (s === 'delvis') return '<span class="badge badge-flag">delvis</span>';
+  if (s === 'fel') return '<span class="badge badge-flag">fel</span>';
+  if (s === 'kör') return '<span class="badge badge-intern">importerar…</span>';
+  return '<span class="badge">kö</span>';
+}
+
+function renderQueue() {
+  const el = document.getElementById('fileRows');
+  el.innerHTML = uploadQueue.length
+    ? uploadQueue.map((q, i) => `<div class="filerad">
+        <span class="filerad-namn"><strong>${esc(q.name)}</strong> <span class="muted">(${fmtSize(q.size)})</span></span>
+        <select aria-label="Nivå för ${esc(q.name)}" onchange="setRowNiva(${i}, this.value)" ${q.status === 'kör' ? 'disabled' : ''}>
+          <option value="publik" ${q.niva === 'publik' ? 'selected' : ''}>Publik — besökare</option>
+          <option value="intern" ${q.niva === 'intern' ? 'selected' : ''}>Intern — personal</option>
+        </select>
+        ${statusBadge(q.status)}
+        ${q.status === 'kör' ? '' : `<button class="btn-ghost" onclick="removeRow(${i})">Ta bort</button>`}
+      </div>`).join('')
+    : '<p class="muted">Inga filer valda ännu.</p>';
+  const btn = document.getElementById('doImportBtn');
+  const redo = uploadQueue.filter(q => q.status === 'kö' || q.status === 'fel').length;
+  btn.disabled = !redo;
+  btn.textContent = redo ? `Importera alla (${redo})` : 'Importera';
+}
+
+async function doImports() {
+  const el = document.getElementById('importStatus');
+  const resEl = document.getElementById('importResults');
+  el.innerHTML = ''; resEl.innerHTML = '';
+  const todos = uploadQueue.filter(q => q.status === 'kö' || q.status === 'fel');
+  if (!todos.length) { setMsg(el, false, 'Inga filer att importera.'); return; }
+  let total = 0;
+  for (const q of todos) {
+    q.status = 'kör'; renderQueue();
+    await uploadOne(q);
+    if (q.tr) total = q.tr.totalt_dokument ?? total;
+    renderQueue();
+    renderResults(uploadQueue.filter(x => x.status === 'klar' || x.status === 'fel'));
+  }
+  const felCount = uploadQueue.filter(q => q.status === 'fel').length;
+  setMsg(el, felCount === 0,
+    felCount === 0
+      ? `Klart — ${todos.length} fil${todos.length > 1 ? 'er' : ''} importerades. Totalt i korpus: ${total}.`
+      : `${todos.length - felCount}/${todos.length} filer klara, ${felCount} med problem — se detaljer nedan.`);
+  if (total) document.getElementById('uploadDocCount').textContent = 'Totalt ' + total + ' dokument';
+  try { loadDocs(); loadOverview(); } catch {}
+}
+
+async function uploadOne(q) {
+  const fd = new FormData();
+  fd.append('file', q.file);
+  fd.append('niva', q.niva);
+  try {
+    const r = await fetch('/api/admin/import', { method: 'POST', headers: headers(), body: fd });
+    if (r.status === 401) { showLogin(); q.status = 'kö'; return; }
+    q.tr = await r.json();
+    q.status = q.tr.ok ? (q.tr.rader_fel && q.tr.rader_fel > 0 ? 'delvis' : 'klar') : 'fel';
+  } catch (e) {
+    q.tr = { ok: false, fel: [{ fel: String(e) }] };
+    q.status = 'fel';
+  }
+}
+
+function renderResults(done) {
+  const el = document.getElementById('importResults');
+  const html = done.map(q => {
+    const d = q.tr || {};
+    const konflikt = d.rader_konflikt || 0;
+    const fel = (d.fel || []).map(f => '· ' + esc(f.fel)).join('<br>');
+    const badge = q.status === 'klar'
+      ? '<span class="badge badge-publik">importerad</span>'
+      : q.status === 'delvis' ? '<span class="badge badge-flag">delvis</span>'
+      : '<span class="badge badge-flag">problem</span>';
+    return `<div class="res-rad ${q.status === 'klar' ? 'res-ok' : 'res-fel'}">
+      <strong>${esc(q.name)}</strong> ${badge}
+      <span class="muted">${esc(d.format || '?')} · ${esc(d.rader_ok || 0)}/${esc(d.rader_in || 0)} rader</span>
+      ${konflikt ? ` <span class="badge badge-flag" title="Samma id från annan källa — lös i Konflikter-tabben">${konflikt} konflikt(er)</span>` : ''}
+      ${fel ? `<details class="res-det"><summary>${(d.fel || []).length} fel — visa detaljer</summary><div class="res-fel-lista">${fel}</div></details>` : ''}
+    </div>`;
+  }).join('');
+  el.innerHTML = '<h3 style="margin:14px 0 8px; font-size:14px;">Resultat</h3>' + html;
+}
+
+function downloadMall(kind) {
+  if (kind === 'json') {
+    const tpl = {
+      dokument: [
+        { titel: 'Exempel: Öppettider sommaren', typ: 'bibliotek', text: 'Under sommaren har biblioteket öppet vardagar 10-16, lördagar 10-14 (från 24 juni till 15 augusti).', meta: { owner: 'Anna — bibliotek', uppdaterad: '2026-06-01' } },
+        { titel: 'Exempel: Intern rutin', typ: 'rutin', text: 'Nya lånekort registreras i disken. Besökaren fyller i formuläret och visar id-handling.', meta: { niva: 'intern', owner: 'Kalle — kundtjänst' } },
+      ],
+    };
+    blobDownload(JSON.stringify(tpl, null, 2), 'import-mall.json');
+  } else {
+    blobDownload(
+      '# Exempel — varje rubrik (# ...) blir ett eget dokument.\n\n' +
+      '# Öppettider sommaren\nUnder sommaren har biblioteket öppet vardagar 10-16.\n\n' +
+      '# Rutin: Nya lånekort\nNya lånekort registreras i disken.\n',
+      'import-mall.md');
+  }
+}
+function blobDownload(text, filename) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([text], { type: 'text/plain;charset=utf-8' }));
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+async function rebuild() {
+  const el = document.getElementById('importStatus');
+  try {
+    const d = await api('/api/admin/rebuild', { method: 'POST' });
+    setMsg(el, true, `Index återskapades. Dokument: ${d.dokument}, vektorer: ${d.vektorer ? 'aktiva' : 'av'}.`);
+    loadDocs();
+  } catch (e) { setMsg(el, false, String(e)); }
+}
+
+/* ---------- Källregister (kontinuerlig dataförsörjning) ---------- */
+async function loadSources() {
+  try {
+    const d = await api('/api/admin/sources');
+    const srcs = d.kallor || [];
+    document.getElementById('srcCount').textContent = srcs.length + ' aktiva källor';
+    const el = document.getElementById('srcList');
+    if (!srcs.length) { el.innerHTML = '<p class="muted">Inga källor registrerade ännu — lägg till en ovan.</p>'; return; }
+    el.innerHTML = '<table><tr><th>Namn</th><th>URL</th><th>Typ</th><th>Nivå</th><th>Intervall</th><th>Senast körning</th><th>Status</th><th></th></tr>' +
+      srcs.map(s => {
+        const st = s.status ? { ok: 'OK', delvis: 'Delvis', fel: 'Fel', '': 'Aldrig' }[s.status] || s.status : 'Aldrig';
+        const stB = s.status === 'ok' || s.status === 'delvis' ? 'badge-publik' : 'badge-flag';
+        const skyldig = s.skyldig ? ' <span class="badge badge-intern" title="Intervall löpt ut — synkas nu av pollern">att synka</span>' : '';
+        return `<tr><td><strong>${esc(s.namn)}</strong></td><td><span class="kalla-tag">${esc(s.url)}</span></td>` +
+          `<td>${esc(s.typ)}</td><td>${esc(s.niva)}</td><td>${esc(s.intervall_min)} min</td>` +
+          `<td class="muted">${esc(String(s.senast_kord || '').slice(0, 16)) || '—'}</td>` +
+          `<td><span class="badge ${stB}">${esc(st)}</span>${skyldig}</td>` +
+          `<td><button class="btn-ghost" onclick="synkaKalla(${esc(s.id)})">Synka nu</button>` +
+          `<button class="btn-ghost" onclick="kallaLogg(${esc(s.id)}, this)">Logg</button>` +
+          `<button class="btn-ghost" onclick="taBortKalla(${esc(s.id)})">Ta bort</button></td></tr>`;
+      }).join('') + '</table>';
+  } catch (e) {
+    document.getElementById('srcList').innerHTML = '<p class="muted">Kunde inte ladda källorna.</p>';
+  }
+}
+async function registreraKalla() {
+  const namn = document.getElementById('srcNamn').value.trim();
+  const url = document.getElementById('srcUrl').value.trim();
+  const typ = document.getElementById('srcTyp').value;
+  const niva = document.getElementById('srcNiva').value;
+  const intervall_min = parseInt(document.getElementById('srcIntervall').value, 10) || 1440;
+  const el = document.getElementById('srcStatus');
+  if (!namn || !url) { setMsg(el, false, 'Namn och URL krävs.'); return; }
+  try {
+    const d = await api('/api/admin/sources', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ namn, url, typ, niva, intervall_min }),
+    });
+    if (!d.ok) { setMsg(el, false, d.fel || 'Misslyckades'); return; }
+    setMsg(el, true, `Källan "${namn}" registrerades.`);
+    document.getElementById('srcNamn').value = '';
+    document.getElementById('srcUrl').value = '';
+    loadSources();
+  } catch (e) { setMsg(el, false, String(e)); }
+}
+async function synkaKalla(id) {
+  try {
+    const d = await api('/api/admin/sources/' + id + '/sync', { method: 'POST' });
+    alert((d.ok ? 'Synk ok' : 'Synk problem') + '\nok=' + (d.rader_ok ?? '-') + ', fel=' + (d.rader_fel ?? '-') +
+      (d.fel && d.fel.length ? '\n' + d.fel.map(f => f.fel).join('\n') : ''));
+    loadSources();
+  } catch (e) { alert(String(e)); }
+}
+async function taBortKalla(id) {
+  if (!confirm('Radera källan?')) return;
+  try { await api('/api/admin/sources/' + id, { method: 'DELETE' }); loadSources(); } catch {}
+}
+async function kallaLogg(id, btn) {
+  if (btn) {
+    btn.disabled = true;
+    setTimeout(() => { btn.disabled = false; }, 800);
+  }
+  try {
+    const d = await api('/api/admin/sources/' + id + '/log');
+    const rader = (d.rader || []);
+    alert(rader.length ? rader.map(r =>
+      `[${String(r.kord_tid).slice(0, 16)}] ${r.status} — ok=${r.rader_ok}, fel=${r.rader_fel}, konflikter=${r.konflikter}\n${r.notis || ''}`
+    ).join('\n') : 'Ingen logg ännu.');
+  } catch {}
+}
+
+async function loadDocs() {
+  const q = document.getElementById('docQ').value.trim();
+  const niva = document.getElementById('docNiva').value;
+  const typ = document.getElementById('docTyp').value;
+  const params = new URLSearchParams({ q, limit: '500' });
+  if (niva) params.set('niva', niva);
+  if (typ) params.set('typ', typ);
+  try {
+    const d = await api('/api/admin/documents?' + params.toString());
+    document.getElementById('docCount').textContent = d.totalt + ' dokument';
+    document.getElementById('docRows').innerHTML = (d.dokument || []).map(x => {
+      const nivB = x.niva === 'intern' ? '<span class="badge badge-intern">intern</span>' : '<span class="badge badge-publik">publik</span>';
+      const meta = x.meta || {};
+      const agare = x.owner || meta.owner || '—';
+      const granskadDatum = x.senast_granskad || meta.senast_granskad || '';
+      const staleB = x.stale ? '<span class="badge badge-flag" title="Äldre än ' + esc(d.staleness_dagar) + ' dagar">stale</span>'
+        : (x.staleness_dagar != null ? '<span class="badge badge-publik" title="Granskad">ok</span>' : '<span class="badge badge-publik">ny</span>');
+      const granskad = x.staleness_dagar != null
+        ? esc(String(granskadDatum).slice(0, 10)) + ', ' + esc(x.staleness_dagar) + ' d'
+        : 'aldrig';
+      return `<tr><td>${esc(x.typ)}</td>` +
+        `<td><strong>${esc(x.titel)}</strong><br><span class="kalla-tag">${esc(x.id)}</span></td>` +
+        `<td>${nivB}</td><td>${esc(x.kalla || '')}</td>` +
+        `<td>${esc(agare)}</td>` +
+        `<td>${granskad} ${staleB}</td>` +
+        `<td>${x.vektorerad ? '√' : '—'}</td>` +
+        `<td><button class="btn-danger" onclick="deleteDoc('${esc(x.id)}')">Radera</button></td></tr>`;
+    }).join('') || '<tr><td colspan="8" class="muted">Inga dokument.</td></tr>';
+  } catch {}
+}
+async function deleteDoc(id) {
+  if (!confirm('Radera ' + id + '?')) return;
+  await api('/api/admin/documents/' + encodeURIComponent(id), { method: 'DELETE' });
+  loadDocs();
+}
+
+/* ---------- Konflikter ---------- */
+let conflictStatus = 'olost';
+async function loadConflicts(status) {
+  if (status) conflictStatus = status;
+  try {
+    const d = await api('/api/admin/conflicts?status=' + encodeURIComponent(conflictStatus));
+    const ks = d.konflikter || [];
+    document.getElementById('conflictCount').textContent = ks.length + ' konflikter';
+    document.getElementById('conflictRows').innerHTML = ks.map(k => {
+      const st = { olost: 'Olöst', behall: 'Befintlig behållen', ersatt: 'Ersatt med ny' }[k.status] || k.status;
+      const stB = k.status === 'olost' ? 'badge-flag' : 'badge-publik';
+      const knappar = k.status === 'olost'
+        ? `<button class="btn-ghost" onclick="resolveConflict(${esc(k.id)},'befintlig')">Behåll befintlig</button>` +
+          `<button class="btn-primary" onclick="resolveConflict(${esc(k.id)},'ny')">Ta ny</button>`
+        : `<span class="muted">${esc(String(k.resolved_at || '').slice(0, 10))}</span>`;
+      return `<tr><td class="muted">#${esc(k.id)}</td><td><strong>${esc(k.doc_id)}</strong></td>` +
+        `<td>${esc(k.typ || '')}</td><td>${esc(String(k.amne || '').slice(0, 40))}</td>` +
+        `<td>${esc(k.befintlig_kalla || '')}</td><td>${esc(k.ny_kalla || '')}</td>` +
+        `<td><span class="badge ${stB}">${esc(st)}</span></td><td>${knappar}</td></tr>`;
+    }).join('') || '<tr><td colspan="8" class="muted">Inga konflikter.</td></tr>';
+  } catch {}
+}
+async function resolveConflict(id, vinnare) {
+  if (!confirm('Lös konflikt #' + id + ' som "' + (vinnare === 'ny' ? 'Ta ny' : 'Behåll befintlig') + '"?')) return;
+  try {
+    const d = await api('/api/admin/conflicts/' + id + '/resolve', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ vinnare }),
+    });
+    if (d.ok) { loadConflicts(); } else { alert(d.fel || 'Misslyckades'); }
+  } catch (e) { alert(String(e)); }
+}
+
+/* ---------- Frågelogg ---------- */
+async function loadLog() {
+  try {
+    const d = await api('/api/admin/query-log?senaste=100');
+    document.getElementById('logRows').innerHTML = (d.rader || []).map(r => {
+      const fb = r.fallback ? '<span class="badge badge-intern">strömlös</span>' : '<span class="badge badge-publik">gateway</span>';
+      const ks = (r.kallor || []).map(k => `<span class="kalla-tag">${esc(k.typ)}:${esc(k.id)}</span>`).join(' ');
+      return `<tr><td class="muted">${esc(String(r.created_at).slice(0,16))}</td>` +
+        `<td>${esc(String(r.fraga).slice(0,80))}</td><td>${fb}</td>` +
+        `<td class="muted">${esc(String(r.prompt_version || '').slice(0,8))}</td>` +
+        `<td class="muted">${esc(r.model || '')}</td><td>${ks || '—'}</td></tr>`;
+    }).join('') || '<tr><td colspan="6" class="muted">Ingen aktivitet ännu.</td></tr>';
+  } catch {}
+}
+
+/* ---------- Metrics ---------- */
+async function loadMetrics() {
+  try {
+    const m = await api('/api/admin/metrics?hours=24');
+    const l = m.latens || {};
+    const rows = [['Antal mätningar', l.n ?? '–'], ['p50', l.p50 != null ? l.p50 + ' ms' : '–'],
+      ['p95', l.p95 != null ? l.p95 + ' ms' : '–'], ['p99', l.p99 != null ? l.p99 + ' ms' : '–'],
+      ['Max', l.max != null ? l.max + ' ms' : '–']];
+    document.getElementById('latGrid').innerHTML = rows.map(([label, value]) =>
+      `<div class="stat"><div class="label">${esc(label)}</div><div class="value">${esc(value)}</div></div>`).join('');
+
+    const a = m.analys || {};
+    document.getElementById('metricsAnalys').innerHTML =
+      `<p>Fallback-rate (strömavbrott, dummy): <strong>${a.fallback_rate ?? 0}%</strong> (${a.fallbacks ?? 0} gånger)</p>` +
+      `<p style="margin-top:8px;">Korpus: <strong>${m.korpus?.dokument ?? '–'}</strong> dokument, ` +
+      `varav <strong>${m.korpus?.interna ?? 0}</strong> interna. Index: ${esc(m.korpus?.index || '–')}. ` +
+      `Vektorer: ${m.korpus?.vektorer ? 'aktiva' : 'av'}.</p>`;
+
+    const s = m.staleness || {};
+    const staleRows = [
+      ['Granskade', s.granskat ?? '–', 'inom ' + (s.trodsel_dagar ?? 365) + ' dagar'],
+      ['Ej granskade', s.granskat_aldrig ?? '–', 'aldrig satt'],
+      ['För gamla', s.granskat_gammalt ?? '–', 'äldre än tröskel'],
+      ['Utan ägare', s.utan_agare ?? '–', 'saknar contact'],
+    ];
+    document.getElementById('staleGrid').innerHTML = staleRows.map(([label, value, sub]) =>
+      `<div class="stat"><div class="label">${esc(label)}</div><div class="value">${esc(value)}</div>` +
+      `<div class="sub">${esc(sub)}</div></div>`).join('');
+  } catch {}
+}
+
+/* ---------- Katalogimport ---------- */
+let katQueue = [];
+const MAX_KAT_UPLOADS = 10;
+
+function setupKatDropZone() {
+  const dz = document.getElementById('katDropZone');
+  const fi = document.getElementById('katFileInput');
+  dz.addEventListener('click', () => fi.click());
+  dz.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target === dz) { e.preventDefault(); fi.click(); } });
+  fi.addEventListener('change', () => { addKatFiles(fi.files); fi.value = ''; });
+  for (const t of ['dragover', 'dragenter']) dz.addEventListener(t, e => { e.preventDefault(); dz.classList.add('dz-active'); });
+  for (const t of ['dragleave', 'dragend']) dz.addEventListener(t, () => dz.classList.remove('dz-active'));
+  dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('dz-active'); addKatFiles(e.dataTransfer.files); });
+}
+
+function addKatFiles(list) {
+  for (const f of [...(list || [])].filter(x => !katQueue.some(q => q.name === x.name))) {
+    if (katQueue.length >= MAX_KAT_UPLOADS) break;
+    katQueue.push({ name: f.name, size: f.size, file: f, status: 'kö' });
+  }
+  renderKatQueue();
+}
+function renderKatQueue() {
+  const el = document.getElementById('katFileRows');
+  el.innerHTML = katQueue.length
+    ? katQueue.map((q, i) => `<div class="filerad">
+        <span class="filerad-namn"><strong>${esc(q.name)}</strong> <span class="muted">(${fmtSize(q.size)})</span></span>
+        ${statusBadge(q.status)}
+        ${q.status === 'kör' ? '' : `<button class="btn-ghost" onclick="katQueue.splice(${i},1); renderKatQueue(); refreshKatBtn();">Ta bort</button>`}
+      </div>`).join('')
+    : '<p class="muted">Inga filer valda ännu.</p>';
+  refreshKatBtn();
+}
+async function refreshKatBtn() {
+  const btn = document.getElementById('katImportBtn');
+  const redo = katQueue.filter(q => q.status === 'kö' || q.status === 'fel').length;
+  btn.disabled = !redo;
+  btn.textContent = redo ? `Importera alla (${redo})` : 'Importera';
+}
+async function katUploadOne(q) {
+  const fd = new FormData();
+  fd.append('file', q.file);
+  try {
+    const r = await fetch('/api/admin/import', { method: 'POST', headers: headers(), body: fd });
+    if (r.status === 401) { showLogin(); q.status = 'kö'; return; }
+    q.tr = await r.json();
+    q.status = q.tr.ok ? (q.tr.rader_fel && q.tr.rader_fel > 0 ? 'delvis' : 'klar') : 'fel';
+  } catch (e) { q.tr = { ok: false, fel: [{ fel: String(e) }] }; q.status = 'fel'; }
+}
+async function doKatImports() {
+  const el = document.getElementById('katImportStatus');
+  const resEl = document.getElementById('katImportResults');
+  el.innerHTML = ''; resEl.innerHTML = '';
+  const todos = katQueue.filter(q => q.status === 'kö' || q.status === 'fel');
+  if (!todos.length) { setMsg(el, false, 'Inga filer att importera.'); return; }
+  for (const q of todos) { q.status = 'kör'; renderKatQueue(); await katUploadOne(q); renderKatQueue(); }
+  const klar = katQueue.filter(q => q.status === 'klar').length;
+  const problem = katQueue.filter(q => q.status === 'fel').length;
+  setMsg(el, problem === 0, klar === todos.length
+    ? `Klart — ${todos.length} fil${todos.length > 1 ? 'er' : ''} importerades till katalogen.`
+    : `${klar}/${todos.length} filer klara, ${problem} med problem — se detaljer nedan.`);
+  const html = katQueue.filter(q => q.tr).map(q => {
+    const d = q.tr || {};
+    const fel = (d.fel || []).slice(0, 10).map(f => '· ' + esc(f.fel)).join('<br>');
+    const badge = q.status === 'klar'
+      ? '<span class="badge badge-publik">importerad</span>'
+      : q.status === 'delvis' ? '<span class="badge badge-flag">delvis</span>'
+      : '<span class="badge badge-flag">problem</span>';
+    return `<div class="res-rad ${q.status === 'fel' ? 'res-fel' : 'res-ok'}">
+      <strong>${esc(q.name)}</strong> ${badge}
+      <span class="muted">${esc(d.format || '?')} · ${esc(d.rader_ok || 0)}/${esc(d.rader_in || 0)} rader</span>
+      ${d.rader_konflikt ? ` <span class="badge badge-flag" title="Krock med annan källa">${d.rader_konflikt} konflikt(er)</span>` : ''}
+      ${fel ? `<details class="res-det"><summary>${(d.fel || []).length} fel</summary><div class="res-fel-lista">${fel}</div></details>` : ''}
+    </div>`;
+  }).join('');
+  resEl.innerHTML = '<h3 style="margin:14px 0 8px; font-size:14px;">Resultat</h3>' + html;
+  try { loadDocs(); loadOverview(); loadKatStats(); } catch {}
+}
+async function loadKatStats() {
+  try {
+    const s = await api('/api/admin/katalog/stats');
+    const cards = [
+      ['Böcker i korpus', s.bocker ?? '–', (s.med_isbn ?? 0) + ' med ISBN / ' + (s.utan_isbn ?? 0) + ' utan'],
+      ['Disponibilitet okänd', s.disponibilitet_okand ?? '–', 'visas ärligt som "underlag saknas"'],
+      ['Källa', s.kalla ?? '–', 'samma källa skriver över sig själv'],
+    ];
+    document.getElementById('katStat').innerHTML = cards.map(([label, value, sub]) =>
+      `<div class="stat"><div class="label">${esc(label)}</div><div class="value">${esc(value)}</div><div class="sub">${esc(sub)}</div></div>`).join('');
+    const si = s.senaste_import;
+    document.getElementById('katSenaste').textContent = si
+      ? `Senaste import: ${esc(String(si.created_at).slice(0,16))} — ${esc(si.rader_ok)}/${esc(si.rader_in)} rader`
+      : 'Ingen katalogimport ännu i importloggen.';
+  } catch {}
+}
+
+/* ---------- Att göra ---------- */
+async function loadTodos() {
+  const el = document.getElementById('todoRows');
+  try {
+    const d = await api('/api/admin/todos');
+    const t = d.todos || [];
+    document.getElementById('todoCount').textContent = t.filter(x => !x.klar).length + ' öppna av ' + t.length;
+    if (!t.length) { el.innerHTML = '<tr><td colspan="6" class="muted">Inga uppgifter ännu.</td></tr>'; return; }
+    el.innerHTML = t.map(x => {
+      const ok = !!x.klar;
+      return `<tr class="${ok ? 'dim' : ''}">
+        <td><span class="badge ${ok ? 'badge-publik' : 'badge-flag'}">${ok ? 'Klar' : 'Öppen'}</span></td>
+        <td><strong>${esc(x.rubrik)}</strong></td>
+        <td class="muted">${esc(x.detalj)}</td>
+        <td class="muted">${esc(String(x.skapad || '').slice(0,10))}</td>
+        <td class="muted">${ok ? esc(String(x.klar_datum || '').slice(0,10)) : '–'}</td>
+        <td>
+          <button class="btn-ghost" onclick="todoMark(${x.id}, ${ok ? 'false' : 'true'})">${ok ? 'Öppna igen' : 'Klarmarkera'}</button>
+          <button class="btn-ghost" onclick="todoDel(${x.id})">Ta bort</button>
+        </td>
+      </tr>`;
+    }).join('');
+  } catch {
+    el.innerHTML = '<tr><td colspan="6" class="muted">Kunde inte ladda.</td></tr>';
+  }
+}
+
+async function todoMark(id, klar) {
+  await api('/api/admin/todos/' + id, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ klar }) });
+  loadTodos();
+}
+
+async function todoAdd() {
+  const rubrik = document.getElementById('todoRubrik').value.trim();
+  const detalj = document.getElementById('todoDetalj').value.trim();
+  if (!rubrik) return;
+  await api('/api/admin/todos', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ rubrik, detalj }) });
+  document.getElementById('todoRubrik').value = '';
+  document.getElementById('todoDetalj').value = '';
+  loadTodos();
+}
+
+async function todoDel(id) {
+  if (!confirm('Ta bort uppgiften?')) return;
+  await api('/api/admin/todos/' + id, { method: 'DELETE' });
+  loadTodos();
+}
+
+setupDropZone();
+setupKatDropZone();
+
+if (TOKEN) { hideLogin(); loadAll(); } else { showLogin(); }
+</script>
+</body>
+</html>
