@@ -1,6 +1,7 @@
 let avatar, chat, input;
 let mediaRecorder, audioChunks = [];
 let appConfig = {};
+let initialGreeting = '';
 const AIBI_NIVA = window.AIBI_NIVA || new URLSearchParams(location.search).get('niva') || undefined;
 const IS_STAFF = ['personal', 'intern', 'staff'].includes((window.AIBI_NIVA || '').toLowerCase());
 
@@ -31,9 +32,9 @@ async function init() {
     localStorage.removeItem('bosse_session_id');
     chat.saveSessionId('');
 
-    const greeting = appConfig.ui?.greeting || "Hej! Jag är Bosse. Hur kan jag hjälpa dig?";
-    chat.appendMessage(greeting, 'bosse');
-    enterConversationMode();
+    initialGreeting = appConfig.ui?.greeting || "Hej! Jag är Bosse. Hur kan jag hjälpa dig?";
+    const introText = document.getElementById('introText');
+    if (introText) introText.textContent = initialGreeting;
     renderChips();
 
     if (!IS_STAFF) setupAttract();
