@@ -28,7 +28,7 @@ body {
 .app-container {
     width: 100%;
     max-width: 560px;
-    height: min(900px, calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 40px));
+    height: clamp(320px, calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 40px), 900px);
     max-height: 900px;
     display: flex;
     flex-direction: column;
