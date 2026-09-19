@@ -1,6 +1,7 @@
 let avatar, chat, input;
 let mediaRecorder, audioChunks = [];
 let appConfig = {};
+let initialGreeting = '';
 const AIBI_NIVA = window.AIBI_NIVA || new URLSearchParams(location.search).get('niva') || undefined;
 const IS_STAFF = ['personal', 'intern', 'staff'].includes((window.AIBI_NIVA || '').toLowerCase());
 
@@ -12,6 +13,9 @@ function enterConversationMode() {
     const wrapper = document.querySelector('.chat-wrapper');
     if (!wrapper || wrapper.classList.contains('chat-started')) return;
     wrapper.classList.add('chat-started');
+    if (chat && chat.container && chat.container.childElementCount === 0 && initialGreeting) {
+        chat.appendMessage(initialGreeting, 'bosse');
+    }
     requestAnimationFrame(() => chat && chat.scrollToBottom());
 }
 
@@ -31,9 +35,9 @@ async function init() {
     localStorage.removeItem('bosse_session_id');
     chat.saveSessionId('');
 
-    const greeting = appConfig.ui?.greeting || "Hej! Jag är Bosse. Hur kan jag hjälpa dig?";
-    chat.appendMessage(greeting, 'bosse');
-    enterConversationMode();
+    initialGreeting = appConfig.ui?.greeting || "Hej! Jag är Bosse. Hur kan jag hjälpa dig?";
+    const introText = document.getElementById('introText');
+    if (introText) introText.textContent = initialGreeting;
     renderChips();
 
     if (!IS_STAFF) setupAttract();
@@ -129,9 +133,9 @@ async function sendAudio(blob) {
 
 async function handleSend(text) {
     avatar.nod();
+    enterConversationMode();
     avatar.setThinking(true);
     chat.appendMessage(text, 'user');
-    enterConversationMode();
     chat.scrollToBottom();
     input.setTyping(true);
     chat.appendTyping();
