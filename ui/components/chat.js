@@ -1,6 +1,7 @@
 class ChatComponent {
     constructor(containerId) {
         this.container = document.getElementById(containerId);
+        this.scrollContainer = this.container?.closest('.chat-scroll') || this.container;
         this.sessionId = localStorage.getItem('bosse_session_id') || '';
         this.msgIndex = 0;
     }
@@ -178,7 +179,11 @@ class ChatComponent {
     }
 
     scrollToBottom() {
-        this.container.scrollTop = this.container.scrollHeight;
+        const target = this.scrollContainer || this.container;
+        if (!target) return;
+        requestAnimationFrame(() => {
+            target.scrollTop = target.scrollHeight;
+        });
     }
 
     clear() {
@@ -205,10 +210,12 @@ class ChatComponent {
                 for (const m of d.messages) {
                     this.appendMessage(m.content, m.role === 'user' ? 'user' : 'bosse');
                 }
+                if (d.messages.some(m => m.role === 'user') && typeof window.enterConversationMode === 'function') {
+                    window.enterConversationMode();
+                }
             }
         } catch (e) {
             console.warn('Kunde inte ladda historik:', e);
         }
     }
 }
-

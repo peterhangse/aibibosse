@@ -8,6 +8,15 @@ const IDLE_MS = 75000;
 let idleTimer = null;
 let attractAvatar = null;
 
+function enterConversationMode() {
+    const wrapper = document.querySelector('.chat-wrapper');
+    if (!wrapper || wrapper.classList.contains('chat-started')) return;
+    wrapper.classList.add('chat-started');
+    requestAnimationFrame(() => chat && chat.scrollToBottom());
+}
+
+window.enterConversationMode = enterConversationMode;
+
 async function init() {
     try { const r = await fetch('/api/config'); appConfig = await r.json(); }
     catch { appConfig = { avatar: { emoji: '🙂' }, personality: { nickname: 'Bosse', real_name: 'SjöBo', role: 'Bibliotekets digitala värd' }, ui: { greeting: "Hej!\n\nJag heter egentligen SjöBo, men folk kallar mig Bosse.\n\nJag är bibliotekets digitala värd.\n\nHur kan jag hjälpa dig idag?", quick_questions: [], open_now: "Biblioteket har öppet idag – kolla öppettiderna på vår hemsida." }, speech: { tts_enabled: false } }; }
@@ -121,6 +130,7 @@ async function handleSend(text) {
     avatar.nod();
     avatar.setThinking(true);
     chat.appendMessage(text, 'user');
+    enterConversationMode();
     chat.scrollToBottom();
     input.setTyping(true);
     chat.appendTyping();
