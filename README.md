@@ -42,7 +42,9 @@ Utan dessa endpoints blir sidorna bara statiska skal.
 ## Hosting och deploy
 
 Firebase Hosting är konfigurerat i `firebase.json` för att publicera katalogen
-`ui/` och skriva om alla routes till `/index.html`.
+`ui/`. Befintliga filer som `/personal.html`, `/admin.html`,
+`/kiosk/index.html` och `/kiosk/landning.html` serveras direkt, medan övriga
+vägar faller tillbaka till `/index.html`.
 
 Aktuell Firebase-koppling i repot:
 
