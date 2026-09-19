@@ -23,6 +23,19 @@ firebase deploy --only hosting
 
 Resultat: `https://aibibosse.web.app`.
 
+## Automatisk deploy till Firebase Hosting (GitHub Actions)
+
+Repot innehåller en workflow i
+`/home/runner/work/aibibosse/aibibosse/.github/workflows/firebase-hosting-deploy.yml`
+som deployar till Firebase Hosting vid push till `main` eller `master`.
+
+Sätt följande repository secret i GitHub för att den ska fungera:
+
+- `FIREBASE_SERVICE_ACCOUNT_AIBI` = service account JSON för Firebase-projektet
+  `aibi`
+
+Workflowen kan också köras manuellt via **Run workflow** i GitHub Actions.
+
 ## Ta bort Firebase-koppling om du inte vill hosta
 
 Radera `.firebaserc` och `firebase.json`.
