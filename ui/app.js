@@ -26,7 +26,6 @@ async function init() {
     avatar = new AvatarComponent('avatarSection', appConfig);
     chat = new ChatComponent('chatHistory');
     input = new InputComponent('inputArea', handleSend, toggleRecording);
-    document.querySelector('.chat-wrapper')?.classList.remove('chat-started');
 
     chat.clear();
     localStorage.removeItem('bosse_session_id');
