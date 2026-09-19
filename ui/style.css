@@ -158,6 +158,8 @@ body {
     position: sticky;
     bottom: 0;
     z-index: 2;
+    isolation: isolate;
+    background-clip: padding-box;
     box-shadow: var(--input-bar-shadow);
 }
 
