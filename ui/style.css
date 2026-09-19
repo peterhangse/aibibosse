@@ -85,7 +85,6 @@ body {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    min-height: min-content;
 }
 
 .chat-scroll::-webkit-scrollbar { width: 6px; }
