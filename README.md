@@ -1,27 +1,68 @@
 # aibibosse
 
-Sjöbo bibliotek — AI-värd. Tre roller i ett repo (offentligt).
+Sjöbo bibliotek — AI-värd. Det här repot innehåller **frontend/UI-skalen** för
+AiBi/Bosse och Firebase Hosting-konfigurationen för att publicera dem statiskt.
+Själva chatten kräver en separat live-backend.
 
-| Skärm | Fil | Nivå |
+## Vad som finns i repot just nu
+
+| Del | Fil/rutt | Syfte |
 |---|---|---|
-| Medborgare (kiosk) | `ui/kiosk/` | publik |
-| Personal | `ui/personal.html` | intern |
-| Admin | `ui/admin.html` | admin (token) |
+| Medborgarskärm | `/index.html` | Publik Bosse-chatt med välkomstläge, snabbfrågor, talstöd och handoff till personal |
+| Personalskärm | `/personal.html` | Samma chattkärna men i personalnivå/intern kontext |
+| Admin | `/admin.html` | Adminpanel för token-skyddad drift, import, källor, konflikter, metrics, frågelogg och att-göra |
+| Kioskvy | `/kiosk/index.html` | Separat kioskgränssnitt för källgrundade svar/kort |
+| Landningssida | `/kiosk/landning.html` | Enkel routning mellan medborgare, personal och admin |
 
-## Publicera på webben (web.app)
+## Frontend-läge efter senaste merge
 
-Chatten kräver en live-backend (FastAPI + Ollama) — **Firebase Hosting är
-statiskt och kan bara hosta UI-skalen**, inte chatten. För ren statisk
-publicering av gränssnitten:
+- Publik och personal använder samma kärna i `ui/app.js` och komponenterna i
+  `ui/components/`.
+- Mobilchatten har uppdaterats så att innehållet scrollar separat från
+  inmatningsfältet, vilket minskar overflow-problem på små skärmar.
+- Publika Bosse-vyn har attract/idle-läge, snabbfrågor, mikrofon, uppläsning av
+  svar och källa-per-svar.
+- Adminpanelen innehåller dokumentimport, katalogimport, källregister,
+  konfliktlösning, metrics/analys, frågelogg och manuella att-göra-poster.
+- Kioskvyn använder ett eget lättviktsflöde i `ui/kiosk/` och anropar ett
+  separat chat-endpoint-flöde.
+
+## API-beroenden
+
+Repot innehåller **inte** backend-koden. Frontenderna förutsätter att följande
+API:er finns på samma origin eller bakom en reverse proxy:
+
+- Bosse-chatten: `/api/config`, `/api/health`, `/api/chat`, `/api/stt`,
+  `/api/human`, `/api/history`, `/api/feedback`
+- Admin: `/api/admin/*`
+- Kioskflödet: `/api/v1/chat`
+
+Utan dessa endpoints blir sidorna bara statiska skal.
+
+## Hosting och deploy
+
+Firebase Hosting är konfigurerat i `firebase.json` för att publicera katalogen
+`ui/`. Befintliga filer som `/personal.html`, `/admin.html`,
+`/kiosk/index.html` och `/kiosk/landning.html` serveras direkt, medan övriga
+vägar faller tillbaka till `/index.html`.
+
+Aktuell Firebase-koppling i repot:
+
+- Projektfil: `/.firebaserc`
+- Standardprojekt: `aibi`
+- Publik katalog: `/ui`
+
+Det finns **ingen separat deploy-workflow i repot** för hosting. Publicering av
+UI:t sker manuellt med Firebase CLI.
+
+### Manuell publicering
 
 ```bash
-cd /home/nyhetsfabriken/projekt/aibibosse
-firebase login            # interaktivt — kräver din inloggning
-firebase projects:create aibibosse   # välj/ändra projekt-ID i .firebaserc
+cd /path/to/aibibosse
+firebase login
+firebase use aibi
 firebase deploy --only hosting
 ```
-
-Resultat: `https://aibibosse.web.app`.
 
 ## Automatisk deploy till Firebase Hosting (GitHub Actions)
 
@@ -36,11 +77,14 @@ Sätt följande repository secret i GitHub för att den ska fungera:
 
 Workflowen kan också köras manuellt via **Run workflow** i GitHub Actions.
 
-## Ta bort Firebase-koppling om du inte vill hosta
+## Viktiga begränsningar
 
-Radera `.firebaserc` och `firebase.json`.
+- Firebase Hosting publicerar bara det statiska UI:t, inte FastAPI/Ollama eller
+  annan serverlogik.
+- Admin kräver `BOSSE_ADMIN_TOKEN`, men tokenen ska inte ligga i repot.
+- Om backend eller proxy inte är uppe kan UI:t laddas men chatten vara offline.
 
-## Notis
+## Säkerhet
 
-Inga tokens/nycklar i repot — `BOSSE_ADMIN_TOKEN` ligger i systemd-enheten,
-inte i kod.
+Inga tokens eller nycklar ska committas. `BOSSE_ADMIN_TOKEN` ska ligga i
+driftmiljön, inte i koden.
