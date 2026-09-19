@@ -640,13 +640,31 @@ body {
 .quick-chip:hover { background: #faf3ea; transform: translateY(-1px); box-shadow: 0 3px 10px rgba(139,94,60,.14); }
 .quick-chip:active { transform: scale(0.97); }
 
-.chat-wrapper.chat-started .avatar-section,
-.chat-wrapper.chat-started .intro-box,
-.chat-wrapper.chat-started .quick-chips {
+.chat-wrapper.conversation-active .quick-chips {
     display: none;
 }
 
-.chat-wrapper.chat-started .chat-history {
+.chat-wrapper.conversation-active .avatar-section {
+    padding: 12px 20px 4px;
+}
+
+.chat-wrapper.conversation-active .intro-box {
+    margin: 0 16px 8px;
+    padding: 10px 14px;
+    border-radius: 14px;
+    background: #f7f2eb;
+}
+
+.chat-wrapper.conversation-active .intro-text {
+    font-size: 13px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+}
+
+.chat-wrapper.conversation-active .chat-history {
     margin-top: 0;
 }
 
