@@ -64,6 +64,19 @@ firebase use aibi
 firebase deploy --only hosting
 ```
 
+## Automatisk deploy till Firebase Hosting (GitHub Actions)
+
+Repot innehåller en workflow i
+`.github/workflows/firebase-hosting-deploy.yml`
+som deployar till Firebase Hosting vid push till `main` eller `master`.
+
+Sätt följande repository secret i GitHub för att den ska fungera:
+
+- `FIREBASE_SERVICE_ACCOUNT_AIBI` = service account JSON för Firebase-projektet
+  `aibi`
+
+Workflowen kan också köras manuellt via **Run workflow** i GitHub Actions.
+
 ## Viktiga begränsningar
 
 - Firebase Hosting publicerar bara det statiska UI:t, inte FastAPI/Ollama eller
