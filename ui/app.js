@@ -131,8 +131,8 @@ async function handleSend(text) {
     avatar.nod();
     avatar.setThinking(true);
     chat.appendMessage(text, 'user');
-    chat.scrollToBottom();
     enterConversationMode();
+    chat.scrollToBottom();
     input.setTyping(true);
     chat.appendTyping();
     chat.scrollToBottom();
