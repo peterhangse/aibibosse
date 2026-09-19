@@ -58,7 +58,7 @@ UI:t sker manuellt med Firebase CLI.
 ### Manuell publicering
 
 ```bash
-cd /home/runner/work/aibibosse/aibibosse
+cd /path/to/aibibosse
 firebase login
 firebase use aibi
 firebase deploy --only hosting
