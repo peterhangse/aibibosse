@@ -1,0 +1,52 @@
+name: Deploy Firebase Hosting
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: firebase-hosting-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      FIREBASE_TOOLS_VERSION: 15.30.2
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Cache npm packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-firebase-tools-${{ env.FIREBASE_TOOLS_VERSION }}
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools@${FIREBASE_TOOLS_VERSION}
+
+      - name: Authenticate Firebase service account
+        env:
+          FIREBASE_SERVICE_ACCOUNT_AIBI: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_AIBI }}
+        run: |
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT_AIBI" > "$RUNNER_TEMP/firebase-service-account.json"
+          echo "GOOGLE_APPLICATION_CREDENTIALS=$RUNNER_TEMP/firebase-service-account.json" >> "$GITHUB_ENV"
+
+      - name: Deploy to Firebase Hosting (live)
+        run: firebase deploy --only hosting --project aibi --non-interactive
+
+      - name: Cleanup service account file
+        if: always()
+        run: rm -f "$RUNNER_TEMP/firebase-service-account.json"
