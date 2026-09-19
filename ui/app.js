@@ -11,8 +11,8 @@ let attractAvatar = null;
 
 function enterConversationMode() {
     const wrapper = document.querySelector('.chat-wrapper');
-    if (!wrapper || wrapper.classList.contains('chat-started')) return;
-    wrapper.classList.add('chat-started');
+    if (!wrapper || wrapper.classList.contains('conversation-active')) return;
+    wrapper.classList.add('conversation-active');
     requestAnimationFrame(() => chat && chat.scrollToBottom());
 }
 
