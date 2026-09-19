@@ -210,6 +210,9 @@ class ChatComponent {
                 for (const m of d.messages) {
                     this.appendMessage(m.content, m.role === 'user' ? 'user' : 'bosse');
                 }
+                if (d.messages.some(m => m.role === 'user') && typeof window.enterConversationMode === 'function') {
+                    window.enterConversationMode();
+                }
             }
         } catch (e) {
             console.warn('Kunde inte ladda historik:', e);

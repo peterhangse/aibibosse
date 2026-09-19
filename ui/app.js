@@ -15,6 +15,8 @@ function enterConversationMode() {
     requestAnimationFrame(() => chat && chat.scrollToBottom());
 }
 
+window.enterConversationMode = enterConversationMode;
+
 async function init() {
     try { const r = await fetch('/api/config'); appConfig = await r.json(); }
     catch { appConfig = { avatar: { emoji: '🙂' }, personality: { nickname: 'Bosse', real_name: 'SjöBo', role: 'Bibliotekets digitala värd' }, ui: { greeting: "Hej!\n\nJag heter egentligen SjöBo, men folk kallar mig Bosse.\n\nJag är bibliotekets digitala värd.\n\nHur kan jag hjälpa dig idag?", quick_questions: [], open_now: "Biblioteket har öppet idag – kolla öppettiderna på vår hemsida." }, speech: { tts_enabled: false } }; }
