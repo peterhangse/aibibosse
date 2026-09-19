@@ -33,6 +33,7 @@ async function init() {
 
     const greeting = appConfig.ui?.greeting || "Hej! Jag är Bosse. Hur kan jag hjälpa dig?";
     chat.appendMessage(greeting, 'bosse');
+    enterConversationMode();
     renderChips();
 
     if (!IS_STAFF) setupAttract();
