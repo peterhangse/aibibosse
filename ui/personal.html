@@ -7,25 +7,34 @@
 <link rel="stylesheet" href="style.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+  /* Personalbannern ligger överst i chattrutan, så den alltid hamnar ovanför
+     chatten. Mörkbrun i stället för blå: den ska synas som personalläge men
+     höra ihop med Bosses färger. */
   .staff-banner {
-    background: #1f3a5f; color: #fff; padding: 10px 20px; font-size: 14px;
-    display: flex; justify-content: space-between; align-items: center; gap: 12px;
-    border-radius: 999px; max-width: 720px; margin: 0 auto 8px;
+    flex-shrink: 0;
+    background: #4a3426; color: #fff; padding: 12px 20px; font-size: 14px;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 6px 14px;
   }
-  .staff-banner a { color: #cfe0f5; text-decoration: none; font-size: 13px; }
-  .app-container { padding-top: 8px; }
+  .staff-banner .staff-links { display: flex; gap: 14px; }
+  .staff-banner a { color: #f0d9c4; text-decoration: none; font-size: 13px; font-weight: 500; }
+  .staff-banner a:hover { text-decoration: underline; }
+  @media (orientation: portrait) and (min-width: 700px) and (min-height: 1000px) {
+    .staff-banner { font-size: 19px; padding: 18px 56px; }
+    .staff-banner a { font-size: 17px; }
+  }
 </style>
 </head>
 <body>
+<div class="app-container">
+<div class="chat-wrapper">
 <div class="staff-banner">
   <span><strong>Personalskärm</strong> — ser även interna dokument (rutiner &amp; policys)</span>
-  <span style="display:flex;gap:12px;">
+  <span class="staff-links">
     <a href="/">Medborgarskärm</a>
     <a href="/admin.html">Admin</a>
   </span>
 </div>
-<div class="app-container">
-<div class="chat-wrapper">
 <div class="chat-scroll" id="chatScroll">
 <div class="avatar-section" id="avatarSection"></div>
 <div class="intro-box" id="introBox"><p class="intro-text" id="introText"></p></div>
