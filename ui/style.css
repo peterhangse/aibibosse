@@ -749,3 +749,66 @@ body {
     .chat-history { padding-left: 14px; padding-right: 14px; }
     .input-area { padding-left: 14px; padding-right: 14px; }
 }
+
+/* ===== Stående pekskärm (bibliotekets kiosker) =====
+   Slår till på stående skärmar som är minst 700 px breda och 1000 px höga,
+   alltså pekskärmarna i 1080x1920 men inte mobiler. Bosse fyller då hela
+   skärmen, och text och knappar blir stora nog att träffa med fingret. */
+@media (orientation: portrait) and (min-width: 700px) and (min-height: 1000px) {
+    body { padding: 0; }
+    .app-container { max-width: none; height: 100dvh; max-height: none; }
+    .chat-wrapper { border-radius: 0; border: none; box-shadow: none; }
+
+    .avatar-section { padding: 56px 56px 16px; }
+    .bosse-scene-wrap { max-width: 460px; border-radius: 24px; margin-bottom: 18px; }
+    .bosse-name { font-size: 36px; }
+    .bosse-title { font-size: 20px; }
+    .bosse-workplace { font-size: 18px; }
+
+    .intro-box { margin: 12px 56px 0; padding: 26px 30px; border-radius: 24px; }
+    .intro-text { font-size: 24px; line-height: 1.5; }
+
+    .quick-chips { max-width: none; margin: 28px 56px; gap: 16px; }
+    .quick-chip { font-size: 21px; padding: 18px 28px; border-width: 2px; }
+
+    .chat-history { padding: 20px 56px 0; gap: 18px; }
+    .message { font-size: 22px; padding: 20px 24px; border-radius: 20px; }
+    .typing-bubble { padding: 18px 22px; }
+    .typing-bubble .typing-text { font-size: 18px; }
+    .typing-dots span { width: 9px; height: 9px; }
+    .read-btn, .feedback-btn { font-size: 17px; padding: 8px 14px; }
+    .source-chip, .sources-label { font-size: 16px; }
+
+    .input-area { padding: 22px 56px 32px; }
+    .input-wrapper { gap: 16px; }
+    #userInput { font-size: 22px; padding: 20px 26px; border-radius: 44px; }
+    .mic-btn, .send-btn { width: 72px; height: 72px; }
+    .mic-btn svg, .send-btn svg { width: 30px; height: 30px; }
+    .human-btn { font-size: 20px; padding: 18px; margin-top: 16px; border-radius: 18px; }
+    .status-bar { font-size: 17px; margin-top: 14px; }
+    .status-dot { width: 12px; height: 12px; }
+
+    /* När samtalet är igång krymper Bosse så att svaren får plats. */
+    .chat-wrapper.conversation-active .avatar-section { padding: 28px 56px 8px; }
+    .chat-wrapper.conversation-active .bosse-scene-wrap { max-width: 260px; }
+    .chat-wrapper.conversation-active .intro-box { margin: 0 56px 12px; padding: 14px 20px; }
+    .chat-wrapper.conversation-active .intro-text { font-size: 18px; }
+
+    .attract-overlay { gap: 18px; padding: 64px; }
+    .attract-overlay .attract-scene { max-width: 580px; }
+    .attract-overlay .attract-title { font-size: 56px; }
+    .attract-overlay .attract-sub { font-size: 26px; }
+    .attract-overlay .attract-open { font-size: 22px; padding: 16px 32px; }
+    .attract-overlay .attract-press { font-size: 24px; }
+    .attract-overlay .attract-press .dot { width: 16px; height: 16px; }
+}
+
+/* ===== Stor liggande skärm: lite bredare chattruta ===== */
+@media (orientation: landscape) and (min-width: 1400px) and (min-height: 900px) {
+    .app-container { max-width: 720px; }
+    .message, .intro-text { font-size: 17px; }
+}
+
+/* Inmatningsfältet får krympa, annars knuffas skicka-knappen ut ur rutan på mobil. */
+#userInput { min-width: 0; }
+.attract-overlay .attract-open:empty { display: none; }
