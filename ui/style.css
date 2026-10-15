@@ -842,10 +842,9 @@ body {
     color: var(--text);
 }
 
-/* Källor utan webbadress är bara text, med webbadress en knapp med QR. */
-span.source-chip { cursor: default; }
-.source-chip.har-lank { display: inline-flex; align-items: center; gap: 6px; }
-.source-chip .qr-ikon { display: inline-flex; flex-shrink: 0; }
+/* Källor är bara text, inget händer när man trycker. */
+.source-chip { cursor: default; }
+.source-chip:hover { background: #fdfaf5; }
 
 /* I samtalsläget visas hälsningen på två rader utan tomrader, så att
    meningen om att det är en AI inte göms bakom tre punkter. */

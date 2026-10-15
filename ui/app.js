@@ -59,7 +59,6 @@ function aterstallSamtal() {
     const chips = document.getElementById('quickChips');
     if (chips) chips.classList.remove('hidden');
     renderChips();
-    if (window.AIBI_QR) AIBI_QR.stang();
     if (window.AIBI_A11Y) AIBI_A11Y.aterstall();
     const scroll = document.getElementById('chatScroll');
     if (scroll) scroll.scrollTop = 0;
