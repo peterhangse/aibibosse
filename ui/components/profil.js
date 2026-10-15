@@ -60,7 +60,7 @@
             return P.config.personality?.role || STANDARD.personality.role;
         },
 
-        /* AI-förordningen art. 50 och beslut 16: hälsningen ska säga att det
+        /* AI-förordningen art. 50 och vägval 14 i docs/VAGVAL.md: hälsningen ska säga att det
            är en AI. Saknas ordet i hälsningen från backend läggs en mening till. */
         halsning() {
             const text = P.config.ui?.greeting || STANDARD.ui.greeting;
@@ -111,7 +111,7 @@
         },
 
         /* Text som visas efter att besökaren tryckt på personalknappen.
-           Lovar aldrig mer än bemanningen tillåter (beslut 1). */
+           Lovar aldrig mer än bemanningen tillåter (vägval 1). */
         personalSvar(meddelandeFranServer) {
             const tel = P.telefon();
             const bemannat = P.arBemannat();
