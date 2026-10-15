@@ -217,11 +217,15 @@ class AvatarComponent {
         // Text under
         const info = document.createElement('div');
         info.style.textAlign = 'center';
-        info.innerHTML = `
-            <p class="bosse-name">${this.config.avatar?.name || 'Bosse'}</p>
-            <p class="bosse-title">${this.config.personality?.role || 'Bibliotekets digitala värd'}</p>
-            <p class="bosse-workplace">Sjöbo bibliotek</p>
-        `;
+        const rad = (klass, text) => {
+            const p = document.createElement('p');
+            p.className = klass;
+            p.textContent = text;
+            info.appendChild(p);
+        };
+        rad('bosse-name', window.AIBI ? AIBI.namn() : (this.config.avatar?.name || 'Bosse'));
+        rad('bosse-title', window.AIBI ? AIBI.roll() : (this.config.personality?.role || 'Bibliotekets AI-värd'));
+        rad('bosse-workplace', 'Sjöbo bibliotek');
         this.container.appendChild(info);
     }
 

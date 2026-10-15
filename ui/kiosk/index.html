@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Sjöbo bibliotek — Fråga AI-bibliotekarien</title>
+<link rel="stylesheet" href="../components/gemensam.css">
 <link rel="stylesheet" href="kiosk.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -25,7 +26,7 @@
 <main>
   <section class="forfall"><!-- tunn sektion för att få rätt avstånd --></section>
 
-  <section class="chatt" aria-live="polite">
+  <section class="chatt">
     <div id="meddelanden" class="meddelanden"></div>
     <div id="kort" class="kortrad"></div>
   </section>
@@ -42,9 +43,16 @@
 
 <footer class="fot">
   <span>Källgrundad &mdash; svar bygger på bibliotekets egna fakta.</span>
-  <button id="nytt" class="nytt">Nytt försök</button>
+  <div class="fot-hoger">
+    <div id="a11yPlats"></div>
+    <button id="nytt" class="nytt">Nytt försök</button>
+  </div>
 </footer>
 
+<script src="../vendor/qrcode.js"></script>
+<script src="../components/profil.js"></script>
+<script src="../components/qr.js"></script>
+<script src="../components/tillganglighet.js"></script>
 <script src="kiosk.js"></script>
 </body>
 </html>

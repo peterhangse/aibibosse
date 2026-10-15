@@ -50,17 +50,21 @@ class ChatComponent {
         label.className = 'sources-label';
         label.textContent = 'Enligt våra källor:';
         row.appendChild(label);
+        /* Har källan en webbadress visas en QR-kod när man trycker, så att
+           besökaren kan öppna sidan i mobilen. Annars är källan bara text. */
         for (const s of sources) {
-            const chip = document.createElement('button');
-            chip.type = 'button';
-            chip.className = 'source-chip';
+            const url = window.AIBI_QR ? AIBI_QR.lank(s) : '';
+            const chip = document.createElement(url ? 'button' : 'span');
+            chip.className = 'source-chip' + (url ? ' har-lank' : '');
             chip.textContent = s.titel;
-            chip.addEventListener('click', () => {
-                navigator.clipboard.writeText(s.titel).catch(() => {});
-            });
+            if (url) {
+                chip.type = 'button';
+                chip.setAttribute('aria-label', `${s.titel}. Visa QR-kod till sidan`);
+                chip.insertAdjacentHTML('beforeend', '<span class="qr-ikon" aria-hidden="true"><svg viewBox="0 0 16 16" width="13" height="13"><path fill="currentColor" d="M1 1h6v6H1zm2 2v2h2V3zm6-2h6v6H9zm2 2v2h2V3zM1 9h6v6H1zm2 2v2h2v-2zm7-2h2v2h-2zm3 0h2v3h-2zm-3 3h2v3h-2zm3 2h2v1h-2z"/></svg></span>');
+                chip.addEventListener('click', () => AIBI_QR.visa(url, s.titel));
+            }
             row.appendChild(chip);
         }
-        row.innerHTML += '<span class="sources-hint">(tryck för att kopiera)</span>';
         group.appendChild(row);
         this.scrollToBottom();
     }
@@ -165,7 +169,7 @@ class ChatComponent {
         d.className = 'typing-bubble';
         d.id = 'typingIndicator';
         d.innerHTML = `
-            <span class="typing-text">Bosse tänker</span>
+            <span class="typing-text">${(window.AIBI ? AIBI.namn() : 'Bosse').replace(/[<>&"]/g, '')} tänker</span>
             <span class="typing-dots"><span></span><span></span><span></span></span>
         `;
         this.container.appendChild(d);
