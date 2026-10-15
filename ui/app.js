@@ -1,11 +1,11 @@
 let avatar, chat, input;
 let mediaRecorder, audioChunks = [];
+let kastaInspelning = false;
 let appConfig = {};
 let initialGreeting = '';
 const AIBI_NIVA = window.AIBI_NIVA || new URLSearchParams(location.search).get('niva') || undefined;
 const IS_STAFF = ['personal', 'intern', 'staff'].includes((window.AIBI_NIVA || '').toLowerCase());
 
-const IDLE_MS = 75000;
 let idleTimer = null;
 let attractAvatar = null;
 
@@ -19,41 +19,69 @@ function enterConversationMode() {
 window.enterConversationMode = enterConversationMode;
 
 async function init() {
-    try { const r = await fetch('/api/config'); appConfig = await r.json(); }
-    catch { appConfig = { avatar: { emoji: '🙂' }, personality: { nickname: 'Bosse', real_name: 'SjöBo', role: 'Bibliotekets digitala värd' }, ui: { greeting: "Hej!\n\nJag heter egentligen SjöBo, men folk kallar mig Bosse.\n\nJag är bibliotekets digitala värd.\n\nHur kan jag hjälpa dig idag?", quick_questions: [], open_now: "Biblioteket har öppet idag – kolla öppettiderna på vår hemsida." }, speech: { tts_enabled: false } }; }
+    appConfig = await AIBI.ladda();
     // Röst: om tts_enabled → läs varje svar högt automatiskt.
     window.BOSSE_SPEECH = { auto: Boolean(appConfig.speech && appConfig.speech.tts_enabled) };
+    document.title = `${AIBI.namn()} — ${AIBI.roll()}` + (IS_STAFF ? ' — personalskärm' : '');
 
     avatar = new AvatarComponent('avatarSection', appConfig);
     chat = new ChatComponent('chatHistory');
-    input = new InputComponent('inputArea', handleSend, toggleRecording);
+    input = new InputComponent('inputArea', handleSend, toggleRecording, { isStaff: IS_STAFF });
 
-    chat.clear();
-    localStorage.removeItem('bosse_session_id');
-    chat.saveSessionId('');
-
-    initialGreeting = appConfig.ui?.greeting || "Hej! Jag är Bosse. Hur kan jag hjälpa dig?";
+    initialGreeting = AIBI.halsning();
     const introText = document.getElementById('introText');
     if (introText) introText.textContent = initialGreeting;
-    renderChips();
 
     if (!IS_STAFF) setupAttract();
+    aterstallSamtal();
     checkHealth();
+    setInterval(checkHealth, 60000);
+    for (const typ of ['pointerdown', 'keydown', 'input']) {
+        document.addEventListener(typ, () => { if (!attractVisas()) resetIdle(); }, { passive: true });
+    }
     resetIdle();
+}
+
+/* Nollställer allt som en besökare kan ha lämnat efter sig, så att nästa
+   besökare aldrig ser eller ärver något från den förra (krav F6). */
+function aterstallSamtal() {
+    if (chat) chat.stopSpeak();
+    if (mediaRecorder && mediaRecorder.state === 'recording') {
+        kastaInspelning = true;
+        mediaRecorder.stop();
+    }
+    if (input) { input.setRecording(false); input.clear(); input.resetHuman(); input.setTyping(false); }
+    if (avatar) avatar.setReady();
+    if (chat) { chat.removeTyping(); chat.clear(); chat.saveSessionId(''); }
+    localStorage.removeItem('bosse_session_id');
+    const wrapper = document.querySelector('.chat-wrapper');
+    if (wrapper) wrapper.classList.remove('conversation-active');
+    const chips = document.getElementById('quickChips');
+    if (chips) chips.classList.remove('hidden');
+    renderChips();
+    if (window.AIBI_QR) AIBI_QR.stang();
+    if (window.AIBI_A11Y) AIBI_A11Y.aterstall();
+    const scroll = document.getElementById('chatScroll');
+    if (scroll) scroll.scrollTop = 0;
+}
+
+function attractVisas() {
+    const ov = document.getElementById('attractOverlay');
+    return Boolean(ov && !ov.classList.contains('hidden'));
 }
 
 function resetIdle() {
     if (IS_STAFF || !document.getElementById('attractOverlay')) return;
     if (idleTimer) clearTimeout(idleTimer);
-    idleTimer = setTimeout(showAttract, IDLE_MS);
+    idleTimer = setTimeout(showAttract, AIBI.vantetidMs(75));
 }
 
 function showAttract() {
     const ov = document.getElementById('attractOverlay');
-    if (!ov || ov.classList.contains('hidden') === false) return;
-    chat.stopSpeak();
-    document.getElementById('attractOpen').textContent =
-        appConfig.ui?.open_now || "Biblioteket har öppet idag – kolla öppettiderna på vår hemsida";
+    if (!ov || attractVisas()) return;
+    aterstallSamtal();
+    const open = appConfig.ui?.open_now || '';
+    document.getElementById('attractOpen').textContent = open;
     ov.classList.remove('hidden');
 }
 
@@ -67,9 +95,13 @@ function hideAttract() {
 
 function setupAttract() {
     attractAvatar = new AvatarComponent('attractScene', appConfig, 'bosseSceneAttract');
+    const namn = AIBI.namn();
+    document.getElementById('attractTitle').textContent = `Hej! Jag heter ${namn}.`;
+    document.getElementById('attractSub').textContent =
+        'Jag är bibliotekets AI-värd. Fråga mig om böcker, öppettider eller biblioteket.';
     const ov = document.getElementById('attractOverlay');
     ov.addEventListener('click', hideAttract);
-    window.addEventListener('keydown', () => { if (!ov.classList.contains('hidden')) hideAttract(); });
+    window.addEventListener('keydown', () => { if (attractVisas()) hideAttract(); });
 }
 
 function renderChips() {
@@ -83,6 +115,7 @@ function renderChips() {
         b.className = 'quick-chip';
         b.textContent = q;
         b.addEventListener('click', () => {
+            if (input && input.isOffline) return;
             el.classList.add('hidden');
             handleSend(q);
         });
@@ -91,7 +124,16 @@ function renderChips() {
     el.replaceChildren(...btns);
 }
 
-async function checkHealth() { try { const r = await fetch('/api/health'); const d = await r.json(); input.setStatus(d.mode, d.model); } catch { input.setStatus('offline'); } }
+async function checkHealth() {
+    try {
+        const r = await fetch('/api/health');
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const d = await r.json();
+        input.setStatus(d.mode || 'online', d.model);
+    } catch {
+        input.setStatus('offline');
+    }
+}
 
 async function toggleRecording() {
     if (mediaRecorder && mediaRecorder.state === 'recording') { mediaRecorder.stop(); input.setRecording(false); avatar.setListening(false); resetIdle(); return; }
@@ -104,8 +146,10 @@ async function toggleRecording() {
             const blob = new Blob(audioChunks, { type: 'audio/webm' });
             audioChunks = [];
             stream.getTracks().forEach(t => t.stop());
+            if (kastaInspelning) { kastaInspelning = false; return; }
             await sendAudio(blob);
         };
+        kastaInspelning = false;
         mediaRecorder.start();
         input.setRecording(true);
         avatar.setListening(true);
@@ -129,6 +173,7 @@ async function sendAudio(blob) {
 }
 
 async function handleSend(text) {
+    if (idleTimer) clearTimeout(idleTimer);
     avatar.nod();
     avatar.setThinking(true);
     chat.appendMessage(text, 'user');
@@ -143,6 +188,7 @@ async function handleSend(text) {
         const payload = { message: text };
         if (AIBI_NIVA) payload.niva = AIBI_NIVA;
         const r = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Session-Id': sid }, body: JSON.stringify(payload) });
+        if (!r.ok || !r.body) throw new Error('HTTP ' + r.status);
         chat.removeTyping();
         const bosseMsg = chat.appendMessage('', 'bosse');
         chat.scrollToBottom();
@@ -171,13 +217,15 @@ async function handleSend(text) {
             }
         }
         avatar.setTalking(false);
+        if (!full.trim()) { full = 'Jag fick inget svar just nu. Försök gärna igen.'; bosseMsg.textContent = full; }
+        if (window.AIBI_A11Y) AIBI_A11Y.las(full);
         if (newSid && newSid !== sid) chat.saveSessionId(newSid);
         chat.scrollToBottom();
     } catch (err) {
         chat.removeTyping();
         avatar.setReady();
         chat.appendMessage('Ursäkta, något gick fel.', 'bosse');
-        input.setStatus('offline');
+        checkHealth();
         console.error(err);
     } finally {
         avatar.setReady();

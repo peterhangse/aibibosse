@@ -83,7 +83,7 @@ main { flex: 1; min-height: 0; display: flex; flex-direction: column; }
 .kalla { display: inline-block; background: var(--accent-soft); border-radius: 20px; padding: 4px 12px; margin: 2px 4px 2px 0; }
 
 /* ── Kortrad ──────────────────────────────── */
-.kortrad { display: flex; gap: 12px; flex-wrap: wrap; padding: 0 28px; }
+.kortrad { display: flex; gap: 12px; flex-wrap: wrap; padding: 0; }
 
 .kort {
   background: var(--card); border-radius: 16px; border: 1px solid var(--border);
@@ -160,7 +160,7 @@ main { flex: 1; min-height: 0; display: flex; flex-direction: column; }
   .chatt { padding: 32px 48px; gap: 18px; }
   .bubbla { font-size: 22px; padding: 18px 24px; border-radius: 20px; }
   .kallor { font-size: 16px; }
-  .kortrad { padding: 0 48px; gap: 16px; }
+  .kortrad { padding: 0; gap: 16px; }
   .kort { width: calc(50% - 8px); padding: 22px 24px; }
   .kort .etiket { font-size: 15px; }
   .kort h3 { font-size: 22px; }
@@ -173,4 +173,45 @@ main { flex: 1; min-height: 0; display: flex; flex-direction: column; }
   .forslag button { font-size: 20px; padding: 16px 24px; }
   .fot { padding: 18px 48px; font-size: 17px; }
   .nytt { font-size: 17px; padding: 12px 20px; }
+}
+
+/* ── Fot: text, kontrast och nytt försök ───── */
+.fot-hoger { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+.fot .a11y-knapp { background: transparent; color: #fff; border-color: rgba(255,255,255,.4); }
+.fot .a11y-knapp:hover { background: rgba(255,255,255,.1); }
+.fot .a11y-knapp[aria-pressed="true"] { background: #fff; color: var(--brown); border-color: #fff; }
+
+/* ── Källor och kort ───────────────────────── */
+.kalla.har-lank, .qr-knapp {
+  font-family: inherit; font-size: inherit; cursor: pointer;
+  border: 1.5px solid var(--accent-light); color: var(--accent); background: var(--card);
+}
+.kalla.har-lank:hover, .qr-knapp:hover { background: var(--accent-soft); }
+.qr-knapp { border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 14px; }
+.kort .okand { color: var(--text-muted); font-style: italic; }
+.kort.oppettid .tider { font-size: 20px; font-weight: 600; color: var(--text); }
+.kort.oppettid .dag { text-transform: capitalize; }
+
+/* ── Större text ──────────────────────────── */
+html.storre-text .chatt,
+html.storre-text .kortrad,
+html.storre-text .forslag { zoom: 1.3; }
+html.storre-text #fragainput, html.storre-text #skicka { font-size: 24px; }
+
+/* ── Hög kontrast ─────────────────────────── */
+html.hog-kontrast {
+  --bg: #ffffff; --card: #ffffff; --text: #000000; --text-muted: #1a1a1a;
+  --accent: #8a3500; --accent-dark: #000000; --accent-light: #000000;
+  --accent-soft: #ffffff; --border: #000000; --bubble: #ffffff; --brown: #000000;
+}
+html.hog-kontrast .svar .bubbla, html.hog-kontrast .kort { border: 2px solid #000; box-shadow: none; }
+html.hog-kontrast .talon .bubbla { background: #000; }
+html.hog-kontrast .forslag button, html.hog-kontrast .langbtn, html.hog-kontrast #fragainput { border: 2px solid #000; color: #000; }
+html.hog-kontrast .langbtn.active, html.hog-kontrast #skicka { background: #000; color: #fff; }
+html.hog-kontrast .kort p, html.hog-kontrast .kallor, html.hog-kontrast .tagline { color: #000; }
+html.hog-kontrast .fot { color: #fff; }
+
+@media (max-width: 640px) {
+  .fot { flex-direction: column; align-items: stretch; gap: 10px; padding: 12px 16px; }
+  .fot-hoger { justify-content: space-between; }
 }

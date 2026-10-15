@@ -812,3 +812,100 @@ body {
 /* Inmatningsfältet får krympa, annars knuffas skicka-knappen ut ur rutan på mobil. */
 #userInput { min-width: 0; }
 .attract-overlay .attract-open:empty { display: none; }
+
+/* ===== Statusrad, felläge och personalsvar ===== */
+.status-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+.status-row .status-bar { margin-top: 0; }
+
+.offline-notice {
+    background: #fff4e5;
+    border: 1.5px solid #e8a33d;
+    color: #5c3b00;
+    border-radius: 14px;
+    padding: 12px 14px;
+    font-size: 15px;
+    line-height: 1.45;
+    margin-bottom: 10px;
+}
+
+.human-svar {
+    margin: 8px 2px 0;
+    font-size: 14px;
+    line-height: 1.45;
+    color: var(--text);
+}
+
+/* Källor utan webbadress är bara text, med webbadress en knapp med QR. */
+span.source-chip { cursor: default; }
+.source-chip.har-lank { display: inline-flex; align-items: center; gap: 6px; }
+.source-chip .qr-ikon { display: inline-flex; flex-shrink: 0; }
+
+/* I samtalsläget visas hälsningen på två rader utan tomrader, så att
+   meningen om att det är en AI inte göms bakom tre punkter. */
+.chat-wrapper.conversation-active .intro-text { white-space: normal; }
+
+/* När tjänsten är nere går det inte att fråga. */
+.mic-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+html.aibi-nere .quick-chips { opacity: 0.45; pointer-events: none; }
+
+/* ===== Större text: bara samtalet växer, inte ramen runt ===== */
+html.storre-text .intro-box,
+html.storre-text .quick-chips,
+html.storre-text .chat-history { zoom: 1.3; }
+html.storre-text #userInput { font-size: 19px; }
+html.storre-text .human-btn,
+html.storre-text .human-svar,
+html.storre-text .offline-notice { font-size: 18px; }
+
+/* ===== Hög kontrast ===== */
+html.hog-kontrast {
+    --bg: #ffffff;
+    --card: #ffffff;
+    --text: #000000;
+    --text-muted: #1a1a1a;
+    --accent: #8a3500;
+    --accent-light: #000000;
+    --border: #000000;
+}
+html.hog-kontrast .message.bosse,
+html.hog-kontrast .intro-box,
+html.hog-kontrast .typing-bubble,
+html.hog-kontrast .chat-wrapper.conversation-active .intro-box {
+    background: #ffffff;
+    border: 2px solid #000000;
+    color: #000000;
+}
+html.hog-kontrast .message.user { background: #000000; color: #ffffff; }
+html.hog-kontrast .quick-chip,
+html.hog-kontrast .source-chip,
+html.hog-kontrast .feedback-btn,
+html.hog-kontrast .human-btn { border: 2px solid #000000; color: #000000; background: #ffffff; }
+html.hog-kontrast #userInput { border-color: #000000; background: #ffffff; }
+html.hog-kontrast .send-btn { background: #000000; }
+html.hog-kontrast .mic-btn { background: #ffffff; color: #000000; border: 2px solid #000000; }
+html.hog-kontrast .status-text,
+html.hog-kontrast .read-btn,
+html.hog-kontrast .bosse-title,
+html.hog-kontrast .bosse-workplace,
+html.hog-kontrast .sources-label { color: #000000; }
+html.hog-kontrast .message-feedback { opacity: 1; }
+html.hog-kontrast .human-btn.sent { color: #000000; background: #ffffff; border-style: solid; }
+html.hog-kontrast .offline-notice { background: #ffffff; border: 2px solid #000000; color: #000000; }
+html.hog-kontrast .chat-wrapper { border: 2px solid #000000; }
+
+@media (orientation: portrait) and (min-width: 700px) and (min-height: 1000px) {
+    .status-row { margin-top: 14px; }
+    .offline-notice { font-size: 20px; padding: 18px 22px; border-radius: 18px; margin-bottom: 16px; }
+    .human-svar { font-size: 19px; margin-top: 12px; }
+    html.storre-text #userInput { font-size: 27px; }
+    html.storre-text .human-btn,
+    html.storre-text .human-svar,
+    html.storre-text .offline-notice { font-size: 24px; }
+}
