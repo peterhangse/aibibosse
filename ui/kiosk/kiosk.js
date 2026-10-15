@@ -9,7 +9,6 @@ const TEXTER = {
     laddar: "…tänker…",
     platshallare: "Skriv din fråga…",
     kalla: "Källa:",
-    visaQr: "Visa QR-kod till sidan",
     etiketter: { bok: "Bok", evenemang: "Evenemang", tjanst: "Tjänst", oppettid: "Öppettider", bibliotek: "Bibliotek" },
     tillganglig: "Inne i hyllan",
     utlanad: "Utlånad just nu",
@@ -19,7 +18,6 @@ const TEXTER = {
     kl: "kl",
     tel: "Telefon",
     epost: "E-post",
-    oppnaIMobilen: "Öppna i mobilen",
   },
   en: {
     halsning: "Hi! I am the library's AI assistant and I answer using the library's own information. What would you like to know?",
@@ -29,7 +27,6 @@ const TEXTER = {
     laddar: "…thinking…",
     platshallare: "Type your question…",
     kalla: "Source:",
-    visaQr: "Show QR code for the page",
     etiketter: { bok: "Book", evenemang: "Event", tjanst: "Service", oppettid: "Opening hours", bibliotek: "Library" },
     tillganglig: "Available",
     utlanad: "On loan",
@@ -39,7 +36,6 @@ const TEXTER = {
     kl: "at",
     tel: "Phone",
     epost: "Email",
-    oppnaIMobilen: "Open on your phone",
   },
 };
 
@@ -87,19 +83,9 @@ function escapeHtml(s) {
   return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
 
-function qrKnapp(url, titel, klass, text) {
-  return `<button type="button" class="${klass}" data-url="${escapeHtml(url)}" data-titel="${escapeHtml(titel)}"
-    aria-label="${escapeHtml(titel)}. ${escapeHtml(t("visaQr"))}">${escapeHtml(text)}</button>`;
-}
-
 function kallaHtml(kallor) {
   if (!kallor || !kallor.length) return "";
-  const list = kallor.map((k) => {
-    const url = window.AIBI_QR ? AIBI_QR.lank(k) : "";
-    return url
-      ? qrKnapp(url, k.titel, "kalla har-lank", k.titel)
-      : `<span class="kalla">${escapeHtml(k.titel)}</span>`;
-  }).join("");
+  const list = kallor.map((k) => `<span class="kalla">${escapeHtml(k.titel)}</span>`).join("");
   return `<div class="kallor">${escapeHtml(t("kalla"))} ${list}</div>`;
 }
 
@@ -149,12 +135,10 @@ function kortHtml(kort) {
     }
 
     if (k.typ === "bibliotek") {
-      const url = window.AIBI_QR ? AIBI_QR.lank(k) : "";
       return `<div class="kort">${etikett}${titel}
         ${k.adress ? `<p>${escapeHtml(k.adress)}</p>` : ""}
         ${k.telefon ? `<p>${escapeHtml(t("tel"))} ${escapeHtml(k.telefon)}</p>` : ""}
         ${k.epost ? `<p>${escapeHtml(t("epost"))} ${escapeHtml(k.epost)}</p>` : ""}
-        ${url ? `<p>${qrKnapp(url, k.titel || url, "qr-knapp", t("oppnaIMobilen"))}</p>` : ""}
       </div>`;
     }
 
@@ -219,7 +203,6 @@ function aterstall({ tillSvenska = false } = {}) {
   kortrad.innerHTML = "";
   input.value = "";
   foregaende = null;
-  if (window.AIBI_QR) AIBI_QR.stang();
   if (tillSvenska && sprak !== "sv") {
     sprak = "sv";
     document.querySelectorAll(".langbtn").forEach((x) => x.classList.toggle("active", x.dataset.lang === "sv"));
@@ -245,11 +228,6 @@ forslag.addEventListener("click", (e) => {
     input.value = e.target.textContent;
     skicka();
   }
-});
-
-document.addEventListener("click", (e) => {
-  const knapp = e.target.closest("[data-url]");
-  if (knapp && window.AIBI_QR) AIBI_QR.visa(knapp.dataset.url, knapp.dataset.titel, sprak);
 });
 
 document.getElementById("nytt").addEventListener("click", () => {

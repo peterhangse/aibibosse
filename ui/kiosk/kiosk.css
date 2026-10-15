@@ -182,12 +182,6 @@ main { flex: 1; min-height: 0; display: flex; flex-direction: column; }
 .fot .a11y-knapp[aria-pressed="true"] { background: #fff; color: var(--brown); border-color: #fff; }
 
 /* ── Källor och kort ───────────────────────── */
-.kalla.har-lank, .qr-knapp {
-  font-family: inherit; font-size: inherit; cursor: pointer;
-  border: 1.5px solid var(--accent-light); color: var(--accent); background: var(--card);
-}
-.kalla.har-lank:hover, .qr-knapp:hover { background: var(--accent-soft); }
-.qr-knapp { border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 14px; }
 .kort .okand { color: var(--text-muted); font-style: italic; }
 .kort.oppettid .tider { font-size: 20px; font-weight: 600; color: var(--text); }
 .kort.oppettid .dag { text-transform: capitalize; }

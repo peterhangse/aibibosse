@@ -1,5 +1,5 @@
 /* Delas av Bosse (style.css) och kioskvyn (kiosk.css):
-   QR-ruta, knappar för text och kontrast, och yta för skärmläsare. */
+   knappar för text och kontrast, och yta för skärmläsare. */
 
 .sr-only {
     position: absolute !important;
@@ -11,46 +11,6 @@
 
 /* Ingen blå markering när man trycker på en pekskärm. */
 button, a { -webkit-tap-highlight-color: transparent; }
-
-/* ===== QR-kod till en källa ===== */
-.qr-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 100;
-    background: rgba(44, 32, 24, 0.55);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-}
-.qr-ruta {
-    background: #fff;
-    color: #2c2c2c;
-    border-radius: 20px;
-    padding: 28px 28px 22px;
-    width: min(420px, 100%);
-    text-align: center;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
-    font-family: 'Inter', -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-}
-.qr-rubrik { font-size: 19px; font-weight: 600; margin: 0 0 14px; line-height: 1.35; }
-.qr-bild { width: min(300px, 100%); margin: 0 auto; line-height: 0; }
-.qr-bild svg { width: 100%; height: auto; display: block; }
-.qr-instr { font-size: 16px; margin: 14px 0 4px; line-height: 1.45; }
-.qr-adress { font-size: 13px; color: #6b6b6b; margin: 0 0 18px; word-break: break-all; }
-.qr-stang {
-    font-family: inherit;
-    font-size: 16px;
-    font-weight: 600;
-    background: #c45c26;
-    color: #fff;
-    border: 0;
-    border-radius: 12px;
-    padding: 12px 32px;
-    min-height: 48px;
-    cursor: pointer;
-}
-.qr-stang:hover { background: #a84d1f; }
 
 /* ===== Större text och kontrast ===== */
 .a11y-rad { display: flex; gap: 6px; flex-wrap: wrap; }
@@ -74,19 +34,10 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .a11y-ikon { font-weight: 700; font-size: 1.05em; display: inline-flex; }
 .a11y-ikon svg { width: 1.1em; height: 1.1em; }
 
-/* QR-rutan i kontrastläge */
-html.hog-kontrast .qr-ruta { border: 3px solid #000; color: #000; }
-html.hog-kontrast .qr-adress { color: #000; }
-html.hog-kontrast .qr-stang { background: #000; }
+/* Knapparna i kontrastläge */
 html.hog-kontrast .a11y-knapp { color: #000; border: 2px solid #000; }
 html.hog-kontrast .a11y-knapp[aria-pressed="true"] { background: #000; color: #fff; }
 
 @media (orientation: portrait) and (min-width: 700px) and (min-height: 1000px) {
-    .qr-ruta { width: min(620px, 100%); padding: 40px 40px 30px; }
-    .qr-rubrik { font-size: 26px; }
-    .qr-bild { width: min(440px, 100%); }
-    .qr-instr { font-size: 22px; }
-    .qr-adress { font-size: 17px; }
-    .qr-stang { font-size: 22px; padding: 16px 48px; min-height: 64px; }
     .a11y-knapp { font-size: 17px; padding: 10px 18px; min-height: 52px; }
 }

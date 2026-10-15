@@ -50,19 +50,12 @@ class ChatComponent {
         label.className = 'sources-label';
         label.textContent = 'Enligt våra källor:';
         row.appendChild(label);
-        /* Har källan en webbadress visas en QR-kod när man trycker, så att
-           besökaren kan öppna sidan i mobilen. Annars är källan bara text. */
+        /* Källan visar var svaret kommer ifrån (krav F7). Den är bara text:
+           svaret ska räcka i samtalet, besökaren ska inte skickas vidare. */
         for (const s of sources) {
-            const url = window.AIBI_QR ? AIBI_QR.lank(s) : '';
-            const chip = document.createElement(url ? 'button' : 'span');
-            chip.className = 'source-chip' + (url ? ' har-lank' : '');
+            const chip = document.createElement('span');
+            chip.className = 'source-chip';
             chip.textContent = s.titel;
-            if (url) {
-                chip.type = 'button';
-                chip.setAttribute('aria-label', `${s.titel}. Visa QR-kod till sidan`);
-                chip.insertAdjacentHTML('beforeend', '<span class="qr-ikon" aria-hidden="true"><svg viewBox="0 0 16 16" width="13" height="13"><path fill="currentColor" d="M1 1h6v6H1zm2 2v2h2V3zm6-2h6v6H9zm2 2v2h2V3zM1 9h6v6H1zm2 2v2h2v-2zm7-2h2v2h-2zm3 0h2v3h-2zm-3 3h2v3h-2zm3 2h2v1h-2z"/></svg></span>');
-                chip.addEventListener('click', () => AIBI_QR.visa(url, s.titel));
-            }
             row.appendChild(chip);
         }
         group.appendChild(row);
