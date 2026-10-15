@@ -4,6 +4,9 @@ Sjöbo bibliotek — AI-värd. Det här repot innehåller **frontend/UI-skalen**
 AiBi/Bosse och Firebase Hosting-konfigurationen för att publicera dem statiskt.
 Själva chatten kräver en separat live-backend.
 
+Planen för att samla backend här och ta tjänsten till pilot står i
+`docs/uppdrag/README.md`.
+
 ## Vad som finns i repot just nu
 
 | Del | Fil/rutt | Syfte |
@@ -81,7 +84,7 @@ fungerar även när backend inte svarar.
 
 - `personality.nickname` är namnet som visas överallt i gränssnittet. Byt här
   om projektgruppen bestämmer ett annat namn.
-- `ui.greeting` ska säga att det är en AI (AI-förordningen art. 50, vägval 16).
+- `ui.greeting` ska säga att det är en AI (AI-förordningen art. 50, vägval 14).
   Saknas ordet AI lägger gränssnittet själv till en mening.
 - `ui.idle_seconds` är tiden utan aktivitet innan skärmen återställs.
   Standard är 75 sekunder för Bosse och 120 för kioskvyn.
@@ -190,6 +193,19 @@ driftmiljön, inte i koden.
 
 Ändringar gjorda med Claude, för den som tar vid i nästa session.
 
+### 2026-10-15 — Uppdragsspecifikation för MVP deluxe
+
+- Ny mapp `docs/uppdrag/` med uppdraget som tar Aibi från test till en samlad,
+  testad tjänst som kör som pilot på Bosgame och är redo för Azure. Börja i
+  `docs/uppdrag/README.md`. Reglerna står i `docs/uppdrag/00-regler.md`.
+- Bakgrund i `docs/PROJEKTKONTEXT.md`, projektgruppens beslut i
+  `docs/VAGVAL.md` och kommunens grafiska profil i `docs/GRAFISK-PROFIL.md`.
+- Sjöbo kommuns logotyper i `ui/profil/sjobo/`. Andra kommuner byter dem.
+- Hänvisningarna till vägvalen i README och `profil.js` följer nu den
+  slutliga numreringen (19 vägval). Tabellen i `docs/VAGVAL.md` visar den
+  gamla och den nya.
+- Inget i gränssnittet är ändrat.
+
 ### 2026-10-14 — PR #7: stående pekskärm och samma stil
 
 - Bosse fyller hela skärmen på stående skärmar som är minst 700 × 1000 px
@@ -203,7 +219,7 @@ driftmiljön, inte i koden.
 - Ny `components/profil.js` med alla inställningar. Namnet, hälsningen,
   väntetiden, bemanningen och telefonnumret kommer därifrån.
 - Hälsning, viloskärm och kioskvy säger att det är en AI (AI-förordningen
-  art. 50 och vägval 16).
+  art. 50 och vägval 14).
 - Återställning vid inaktivitet i både Bosse och kioskvyn. Förut låg samtalet
   kvar under viloskärmen, och kioskvyn återställdes inte alls.
 - Personalknappen visar sitt svar under knappen och lovar inte att någon kommer
@@ -226,17 +242,20 @@ driftmiljön, inte i koden.
 
 ## Kvar att göra
 
+Allt nedan, och mycket mer, är planerat i `docs/uppdrag/`. Listan står kvar
+som sammanfattning.
+
 Det här kräver ändringar i backend, som inte finns i det här repot:
 
 - Personalnivån bestäms i dag av webbläsaren (`window.AIBI_NIVA` och
   `?niva=personal` i adressen). Den måste avgöras på servern, annars kan vem
   som helst se interna dokument om backend litar på fältet.
 - Gränssnittet hämtar samtalshistorik per session och adminpanelen visar de
-  senaste frågorna. Kontrollera att backend följer vägval 20: statistik utan
+  senaste frågorna. Kontrollera att backend följer vägval 18: statistik utan
   text, och bara obesvarade frågor sparas tills personalen gått igenom dem.
 - `/api/config` behöver skicka `bemanning` och `kontakt.telefon`, annars visar
   personalknappen bara en neutral text.
-- Synpunktsknapp med samtyckesruta (vägval 10–12) och två enkätfrågor efter
+- Synpunktsknapp med samtyckesruta (vägval 10–11) och två enkätfrågor efter
   avslutat samtal (vägval 2) finns inte än.
 - Bosse och kioskvyn är fortfarande två separata medborgarskärmar. Tanken är
   att flytta svarskorten och språkvalet in i Bosse och sedan ta bort kioskvyn.
